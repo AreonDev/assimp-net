@@ -23,6 +23,7 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -41,14 +42,14 @@ namespace Assimp
         /// <summary>
         /// The 3D vector value of this key.
         /// </summary>
-        public Vector3D Value;
+        public Vector3 Value;
 
         /// <summary>
         /// Constructs a new VectorKey.
         /// </summary>
         /// <param name="time">The time of this key.</param>
         /// <param name="vector">The 3D vector value of this key.</param>
-        public VectorKey(double time, Vector3D vector)
+        public VectorKey(double time, Vector3 vector)
         {
             Time = time;
             Value = vector;

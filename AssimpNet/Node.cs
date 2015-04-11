@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -32,7 +33,7 @@ namespace Assimp
     public sealed class Node : IMarshalable<Node, AiNode>
     {
         private String m_name;
-        private Matrix4x4 m_transform;
+        private Matrix m_transform;
         private Node m_parent;
         private NodeCollection m_children;
         private List<int> m_meshes;
@@ -56,7 +57,7 @@ namespace Assimp
         /// <summary>
         /// Gets or sets the transformation of the node relative to its parent.
         /// </summary>
-        public Matrix4x4 Transform
+        public Matrix Transform
         {
             get
             {
@@ -164,7 +165,7 @@ namespace Assimp
         public Node()
         {
             m_name = String.Empty;
-            m_transform = Matrix4x4.Identity;
+            m_transform = Matrix.Identity;
             m_parent = null;
             m_children = new NodeCollection(this);
             m_meshes = new List<int>();
@@ -223,7 +224,7 @@ namespace Assimp
             return null;
         }
 
-        private IntPtr ToNativeRecursive(IntPtr parentPtr, Node node)
+        private unsafe IntPtr ToNativeRecursive(IntPtr parentPtr, Node node)
         {
             if(node == null)
                 return IntPtr.Zero;
@@ -261,7 +262,7 @@ namespace Assimp
 
                 for(int i = 0; i < numChildren; i++)
                 {
-                    IntPtr currPos = MemoryHelper.AddIntPtr(childrenPtr, stride * i);
+                    IntPtr currPos = IntPtr.Add(childrenPtr, stride * i);
                     Node child = node.m_children[i];
 
                     IntPtr childPtr = IntPtr.Zero;
@@ -273,13 +274,13 @@ namespace Assimp
                     }
 
                     //Write the child's node ptr to our array
-                    MemoryHelper.Write<IntPtr>(currPos, ref childPtr);
+                    *((IntPtr*)currPos) = childPtr;
                 }
             }
 
             //Finall finish writing to the native struct, and write the whole thing to the memory we allocated previously
             nativeValue.Children = childrenPtr;
-            MemoryHelper.Write<AiNode>(nodePtr, ref nativeValue);
+            *((AiNode*)nodePtr) = nativeValue;
 
             return nodePtr;
         }
@@ -299,7 +300,7 @@ namespace Assimp
         /// </summary>
         /// <param name="thisPtr">Optional pointer to the memory that will hold the native value.</param>
         /// <param name="nativeValue">Output native value</param>
-        void IMarshalable<Node, AiNode>.ToNative(IntPtr thisPtr, out AiNode nativeValue)
+        unsafe void IMarshalable<Node, AiNode>.ToNative(IntPtr thisPtr, out AiNode nativeValue)
         {
             nativeValue.Name = new AiString(m_name);
             nativeValue.Transformation = m_transform;
@@ -330,7 +331,7 @@ namespace Assimp
 
                 for(int i = 0; i < numChildren; i++)
                 {
-                    IntPtr currPos = MemoryHelper.AddIntPtr(childrenPtr, stride * i);
+                    IntPtr currPos = IntPtr.Add(childrenPtr, stride * i);
                     Node child = m_children[i];
 
                     IntPtr childPtr = IntPtr.Zero;
@@ -342,7 +343,7 @@ namespace Assimp
                     }
 
                     //Write the child's node ptr to our array
-                    MemoryHelper.Write<IntPtr>(currPos, ref childPtr);
+                    *((IntPtr*)currPos) = childPtr;
                 }
             }
 
@@ -382,12 +383,12 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public unsafe static void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiNode aiNode = MemoryHelper.Read<AiNode>(nativeValue);
+            AiNode aiNode = *((AiNode*)nativeValue);
 
             if(aiNode.NumMeshes > 0 && aiNode.Meshes != IntPtr.Zero)
                 MemoryHelper.FreeMemory(aiNode.Meshes);

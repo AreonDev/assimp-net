@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Assimp.Unmanaged;
 using System.Globalization;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -54,7 +55,7 @@ namespace Assimp
         /// </summary>
         /// <param name="thisPtr">Optional pointer to the memory that will hold the native value.</param>
         /// <param name="nativeValue">Output native value</param>
-        void IMarshalable<Metadata, AiMetadata>.ToNative(IntPtr thisPtr, out AiMetadata nativeValue)
+        unsafe void IMarshalable<Metadata, AiMetadata>.ToNative(IntPtr thisPtr, out AiMetadata nativeValue)
         {
             nativeValue = new AiMetadata();
             nativeValue.NumProperties = (uint) Count;
@@ -69,35 +70,35 @@ namespace Assimp
 
                 switch(kv.Value.DataType)
                 {
-                    case MetaDataType.Bool:
-                        entry.Data = MemoryHelper.AllocateMemory(sizeof(bool));
-                        bool boolValue = (bool) kv.Value.Data;
-                        MemoryHelper.Write<bool>(entry.Data, ref boolValue);
+                case MetaDataType.Bool:
+                    entry.Data = MemoryHelper.AllocateMemory (sizeof(bool));
+                    bool boolValue = (bool)kv.Value.Data;
+                    *((bool*)entry.Data) = boolValue;
                         break;
                     case MetaDataType.Float:
                         entry.Data = MemoryHelper.AllocateMemory(sizeof(float));
                         float floatValue = (float) kv.Value.Data;
-                        MemoryHelper.Write<float>(entry.Data, ref floatValue);
-                        break;
+                    *((float*)entry.Data) = floatValue;
+                    break;
                     case MetaDataType.Int:
                         entry.Data = MemoryHelper.AllocateMemory(sizeof(int));
                         int intValue = (int) kv.Value.Data;
-                        MemoryHelper.Write<int>(entry.Data, ref intValue);
+                    *((int*)entry.Data) = intValue;
                         break;
                     case MetaDataType.String:
                         entry.Data = MemoryHelper.AllocateMemory(MemoryHelper.SizeOf<AiString>());
                         AiString aiStringValue = new AiString(kv.Value.Data as String);
-                        MemoryHelper.Write<AiString>(entry.Data, ref aiStringValue);
+                    *((AiString*)entry.Data) = aiStringValue;
                         break;
                     case MetaDataType.UInt64:
                         entry.Data = MemoryHelper.AllocateMemory(sizeof(UInt64));
                         UInt64 uint64Value = (UInt64) kv.Value.Data;
-                        MemoryHelper.Write<UInt64>(entry.Data, ref uint64Value);
+                    *((ulong*)entry.Data) = uint64Value;
                         break;
                     case MetaDataType.Vector3D:
-                        entry.Data = MemoryHelper.AllocateMemory(MemoryHelper.SizeOf<Vector3D>());
-                        Vector3D vectorValue = (Vector3D) kv.Value.Data;
-                        MemoryHelper.Write<Vector3D>(entry.Data, ref vectorValue);
+                        entry.Data = MemoryHelper.AllocateMemory(MemoryHelper.SizeOf<Vector3>());
+                        Vector3 vectorValue = (Vector3) kv.Value.Data;
+                    *((Vector3*)entry.Data) = vectorValue;
                         break;
                 }
 
@@ -114,7 +115,7 @@ namespace Assimp
         /// Reads the unmanaged data from the native value.
         /// </summary>
         /// <param name="nativeValue">Input native value</param>
-        void IMarshalable<Metadata, AiMetadata>.FromNative(ref AiMetadata nativeValue)
+        unsafe void IMarshalable<Metadata, AiMetadata>.FromNative(ref AiMetadata nativeValue)
         {
             Clear();
 
@@ -136,23 +137,23 @@ namespace Assimp
                 switch(entry.DataType)
                 {
                     case MetaDataType.Bool:
-                        data = MemoryHelper.Read<bool>(entry.Data);
+                    data = *((bool*)entry.Data);
                         break;
                     case MetaDataType.Float:
-                        data = MemoryHelper.Read<float>(entry.Data);
+                    data = *((float*)entry.Data);
                         break;
                     case MetaDataType.Int:
-                        data = MemoryHelper.Read<int>(entry.Data);
+                    data = *((int*)entry.Data);
                         break;
                     case MetaDataType.String:
-                        AiString aiString = MemoryHelper.Read<AiString>(entry.Data);
+                    AiString aiString = *((AiString*)entry.Data);
                         data = aiString.GetString();
                         break;
                     case MetaDataType.UInt64:
-                        data = MemoryHelper.Read<UInt64>(entry.Data);
+                    data = *((ulong*)entry.Data);
                         break;
                     case MetaDataType.Vector3D:
-                        data = MemoryHelper.Read<Vector3D>(entry.Data);
+                    data = *((Vector3*)entry.Data);
                         break;
                 }
 
@@ -284,7 +285,7 @@ namespace Assimp
                         dataTypeType = typeof(UInt64);
                         break;
                     case MetaDataType.Vector3D:
-                        dataTypeType = typeof(Vector3D);
+                        dataTypeType = typeof(Vector3);
                         break;
                 }
 

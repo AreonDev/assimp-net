@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using Assimp.Configs;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -46,7 +47,7 @@ namespace Assimp
         private float m_yAxisRotation = 0.0f;
         private float m_zAxisRotation = 0.0f;
         private bool m_buildMatrix = false;
-        private Matrix4x4 m_scaleRot = Matrix4x4.Identity;
+        private Matrix m_scaleRot = Matrix.Identity;
 
         private IntPtr m_propStore = IntPtr.Zero;
 
@@ -396,7 +397,6 @@ namespace Assimp
         {
             CheckDisposed();
 
-            IntPtr fileIO = IntPtr.Zero;
             IntPtr scenePtr = IntPtr.Zero;
 
             if(scene == null)
@@ -958,10 +958,10 @@ namespace Assimp
 
             if(m_buildMatrix)
             {
-                Matrix4x4 scale = Matrix4x4.FromScaling(new Vector3D(m_scale, m_scale, m_scale));
-                Matrix4x4 xRot = Matrix4x4.FromRotationX(m_xAxisRotation * (float) (Math.PI / 180.0d));
-                Matrix4x4 yRot = Matrix4x4.FromRotationY(m_yAxisRotation * (float) (Math.PI / 180.0d));
-                Matrix4x4 zRot = Matrix4x4.FromRotationZ(m_zAxisRotation * (float) (Math.PI / 180.0d));
+                Matrix scale = Matrix.CreateScale(new Vector3(m_scale, m_scale, m_scale));
+                Matrix xRot = Matrix.CreateRotationX(m_xAxisRotation * (float) (Math.PI / 180.0d));
+                Matrix yRot = Matrix.CreateRotationY(m_yAxisRotation * (float) (Math.PI / 180.0d));
+                Matrix zRot = Matrix.CreateRotationZ(m_zAxisRotation * (float) (Math.PI / 180.0d));
                 m_scaleRot = scale * ((xRot * yRot) * zRot);
             }
 
@@ -969,25 +969,25 @@ namespace Assimp
         }
 
         //Transforms the root node of the scene and writes it back to the native structure
-        private bool TransformScene(IntPtr scene)
+        private unsafe bool TransformScene(IntPtr scene)
         {
             BuildMatrix();
 
             try
             {
-                if(!m_scaleRot.IsIdentity)
+                if(m_scaleRot != Matrix.Identity)
                 {
                     AiScene aiScene = MemoryHelper.MarshalStructure<AiScene>(scene);
                     if(aiScene.RootNode == IntPtr.Zero)
                         return false;
 
-                    IntPtr matrixPtr = MemoryHelper.AddIntPtr(aiScene.RootNode, MemoryHelper.SizeOf<AiString>()); //Skip over Node Name
+                    IntPtr matrixPtr = IntPtr.Add(aiScene.RootNode, MemoryHelper.SizeOf<AiString>()); //Skip over Node Name
 
-                    Matrix4x4 matrix = MemoryHelper.Read<Matrix4x4>(matrixPtr); //Get the root transform
+                    Matrix matrix = *((Matrix*)matrixPtr); //Get the root transform
                     matrix = matrix * m_scaleRot; //Transform
 
                     //Write back to unmanaged mem
-                    MemoryHelper.Write<Matrix4x4>(matrixPtr, ref matrix);
+                    *((Matrix*)matrixPtr) = matrix;
 
                     return true;
                 }

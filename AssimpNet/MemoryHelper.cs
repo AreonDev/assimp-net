@@ -25,6 +25,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Assimp
 {
@@ -67,7 +68,7 @@ namespace Assimp
         /// <param name="managedArray">Array of managed values</param>
         /// <param name="arrayOfPointers">True if the pointer is an array of pointers, false otherwise.</param>
         /// <returns>Pointer to unmanaged memory</returns>
-        public static IntPtr ToNativeArray<Managed, Native>(Managed[] managedArray, bool arrayOfPointers)
+        public unsafe static IntPtr ToNativeArray<Managed, Native>(Managed[] managedArray, bool arrayOfPointers)
             where Managed : class, IMarshalable<Managed, Native>, new()
             where Native : struct
         {
@@ -83,7 +84,7 @@ namespace Assimp
 
             for(int i = 0; i < managedArray.Length; i++)
             {
-                IntPtr currPos = AddIntPtr(nativeArray, stride * i);
+                IntPtr currPos = nativeArray + stride*i;
 
                 Managed managedValue = managedArray[i];
 
@@ -105,7 +106,11 @@ namespace Assimp
 
                         if(isNativeBlittable)
                         {
-                            Write<Native>(ptr, ref nativeValue);
+                            var hnd = GCHandle.Alloc (nativeValue);
+                            byte* p1 = (byte*)ptr, p2 = (byte*)hnd.AddrOfPinnedObject();
+                            for(int _i = 0; _i < sizeofNative; _i++)
+                                *p1++ = *p2++;
+                            hnd.Free();
                         }
                         else
                         {
@@ -113,7 +118,7 @@ namespace Assimp
                         }
                     }
 
-                    Write<IntPtr>(currPos, ref ptr);
+                    *((IntPtr*)currPos) = ptr;
                 }
                 else
                 {
@@ -123,7 +128,11 @@ namespace Assimp
 
                     if(isNativeBlittable)
                     {
-                        Write<Native>(currPos, ref nativeValue);
+                        var hnd = GCHandle.Alloc (nativeValue);
+                        byte* p1 = (byte*)currPos, p2 = (byte*)hnd.AddrOfPinnedObject();
+                        for(int _i = 0; _i < sizeofNative; _i++)
+                            *p1++ = *p2++;
+                        hnd.Free();
                     }
                     else
                     {
@@ -160,7 +169,7 @@ namespace Assimp
         /// <param name="length">Number of elements to marshal</param>
         /// <param name="arrayOfPointers">True if the pointer is an array of pointers, false otherwise.</param>
         /// <returns>Marshaled managed values</returns>
-        public static Managed[] FromNativeArray<Managed, Native>(IntPtr nativeArray, int length, bool arrayOfPointers)
+        public unsafe static Managed[] FromNativeArray<Managed, Native>(IntPtr nativeArray, int length, bool arrayOfPointers)
             where Managed : class, IMarshalable<Managed, Native>, new()
             where Native : struct
         {
@@ -169,16 +178,15 @@ namespace Assimp
 
             //If the pointer is a void** we need to step by the pointer size, otherwise it's just a void* and step by the type size.
             int stride = (arrayOfPointers) ? IntPtr.Size : MarshalSizeOf<Native>();
-            Type nativeValueType = typeof(Native);
             Managed[] managedArray = new Managed[length];
 
             for(int i = 0; i < length; i++)
             {
-                IntPtr currPos = AddIntPtr(nativeArray, stride * i);
+                IntPtr currPos = IntPtr.Add(nativeArray, stride * i);
 
                 //If pointer is a void**, read the current position to get the proper pointer
                 if(arrayOfPointers)
-                    currPos = Read<IntPtr>(currPos);
+                    currPos = *((IntPtr*)currPos);
 
                 Managed managedValue = Activator.CreateInstance<Managed>();
 
@@ -187,7 +195,8 @@ namespace Assimp
 
                 if(managedValue.IsNativeBlittable)
                 {
-                    nativeValue = Read<Native>(currPos);
+
+                    nativeValue = Marshal.PtrToStructure<Native>(currPos);
                 }
                 else
                 {
@@ -210,15 +219,17 @@ namespace Assimp
         /// <typeparam name="T">Struct type</typeparam>
         /// <param name="managedArray">Managed array of structs</param>
         /// <returns>Pointer to unmanaged memory</returns>
-        public static IntPtr ToNativeArray<T>(T[] managedArray) where T : struct
+        public unsafe static IntPtr ToNativeArray<T>(T[] managedArray) where T : struct
         {
             if(managedArray == null || managedArray.Length == 0)
                 return IntPtr.Zero;
-
-            IntPtr ptr = AllocateMemory(SizeOf<T>() * managedArray.Length);
-
-            Write<T>(ptr, managedArray, 0, managedArray.Length);
-
+            var sz = SizeOf<T> () * managedArray.Length;
+            IntPtr ptr = AllocateMemory(sz);
+            var gch = GCHandle.Alloc (managedArray, GCHandleType.Pinned);
+            byte* p1 = (byte*)ptr, p2 = (byte*)gch.AddrOfPinnedObject ();
+            while (sz-- > 0)
+                *p1++ = *p2++;
+            gch.Free ();
             return ptr;
         }
 
@@ -230,15 +241,18 @@ namespace Assimp
         /// <param name="nativeArray">Pointer to unmanaged memory</param>
         /// <param name="length">Number of elements to read</param>
         /// <returns>Managed array</returns>
-        public static T[] FromNativeArray<T>(IntPtr nativeArray, int length) where T : struct
+        public unsafe static T[] FromNativeArray<T>(IntPtr nativeArray, int length) where T : struct
         {
             if(nativeArray == IntPtr.Zero || length == 0)
                 return new T[0];
 
             T[] managedArray = new T[length];
-
-            Read<T>(nativeArray, managedArray, 0, length);
-
+            var sz = length * SizeOf<T> ();
+            var gch = GCHandle.Alloc (managedArray, GCHandleType.Pinned);
+            byte* p1 = (byte*)nativeArray, p2 = (byte*)gch.AddrOfPinnedObject ();
+            while (sz-- > 0)
+                *p2++ = *p1++;
+            gch.Free ();
             return managedArray;
         }
 
@@ -264,7 +278,7 @@ namespace Assimp
         /// <param name="length">Number of elements to free</param>
         /// <param name="action">Delegate that performs the necessary cleanup</param>
         /// <param name="arrayOfPointers">True if the pointer is an array of pointers, false otherwise.</param>
-        public static void FreeNativeArray<T>(IntPtr nativeArray, int length, FreeNativeDelegate action, bool arrayOfPointers) where T : struct
+        public unsafe static void FreeNativeArray<T>(IntPtr nativeArray, int length, FreeNativeDelegate action, bool arrayOfPointers) where T : struct
         {
             if(nativeArray == IntPtr.Zero || length == 0 || action == null)
                 return;
@@ -274,11 +288,11 @@ namespace Assimp
 
             for(int i = 0; i < length; i++)
             {
-                IntPtr currPos = AddIntPtr(nativeArray, stride * i);
+                IntPtr currPos = IntPtr.Add(nativeArray, stride * i);
 
                 //If pointer is a void**, read the current position to get the proper pointer
                 if(arrayOfPointers)
-                    currPos = Read<IntPtr>(currPos);
+                    currPos = *((IntPtr*)currPos);
 
                 //Invoke cleanup
                 action(currPos, arrayOfPointers);
@@ -313,7 +327,7 @@ namespace Assimp
 
             if(managedValue.IsNativeBlittable)
             {
-                Write<Native>(ptr, ref nativeValue);
+                Marshal.StructureToPtr(nativeValue, ptr, true);
             }
             else
             {
@@ -345,7 +359,7 @@ namespace Assimp
 
             if(managedValue.IsNativeBlittable)
             {
-                nativeValue = Read<Native>(ptr);
+                nativeValue = Marshal.PtrToStructure<Native> (ptr);
             }
             else
             {
@@ -401,28 +415,6 @@ namespace Assimp
                 return (T) marshaler.MarshalNativeToManaged(ptr);
 
             return (T) Marshal.PtrToStructure(ptr, type);
-        }
-
-        /// <summary>
-        /// Convienence method for marshaling a structure to a pointer. Only use if the type is not blittable,
-        /// otherwise use the write methods for blittable types.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="value">Struct to marshal</param>
-        /// <param name="ptr">Pointer to unmanaged chunk of memory which must be allocated prior to this call</param>
-        public static void MarshalPointer<T>(T value, IntPtr ptr) where T : struct
-        {
-            if (ptr == IntPtr.Zero)
-                return;
-
-            INativeCustomMarshaler marshaler;
-            if (HasNativeCustomMarshaler(typeof(T), out marshaler))
-            {
-                marshaler.MarshalManagedToNative((Object)value, ptr);
-                return;
-            }
-
-            Marshal.StructureToPtr((Object)value, ptr, true);
         }
 
         /// <summary>
@@ -485,6 +477,7 @@ namespace Assimp
         /// </summary>
         /// <param name="sizeInBytes">Size in bytes to allocate</param>
         /// <returns>Pointer to allocated memory</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr AllocateMemory(int sizeInBytes)
         {
             return Marshal.AllocHGlobal(sizeInBytes);
@@ -494,34 +487,13 @@ namespace Assimp
         /// Frees a chunk of memory.
         /// </summary>
         /// <param name="memoryPtr">Pointer to memory</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FreeMemory(IntPtr memoryPtr)
         {
             if(memoryPtr != IntPtr.Zero)
                 Marshal.FreeHGlobal(memoryPtr);
         }
-
-        /// <summary>
-        /// Frees an array of pointers.
-        /// </summary>
-        /// <param name="memoryPtr">Pointer to memory</param>
-        /// <param name="length">Number of elements</param>
-        public static void FreeMemory(IntPtr memoryPtr, int length)
-        {
-            if(memoryPtr == IntPtr.Zero || length == 0)
-                return;
-
-            int stride = IntPtr.Size;
-
-            for(int i = 0; i < length; i++)
-            {
-                IntPtr currPos = Read<IntPtr>(AddIntPtr(memoryPtr, stride * i));
-
-                if(currPos != IntPtr.Zero)
-                    Marshal.FreeHGlobal(currPos);
-            }
-
-            Marshal.FreeHGlobal(memoryPtr);
-        }
+            
 
         /// <summary>
         /// Clears the memory to the specified value.
@@ -531,7 +503,10 @@ namespace Assimp
         /// <param name="sizeInBytesToClear">Number of bytes, starting from the memory pointer, to clear.</param>
         public static unsafe void ClearMemory(IntPtr memoryPtr, byte clearValue, int sizeInBytesToClear)
         {
-            InternalInterop.MemSetInline((void*) memoryPtr, clearValue, sizeInBytesToClear);
+            var bytes = (byte*)memoryPtr;
+            while (sizeInBytesToClear-- > 0)
+                *bytes++ = clearValue;
+
         }
 
         /// <summary>
@@ -542,7 +517,7 @@ namespace Assimp
         /// <returns>Size of the struct in bytes.</returns>
         public static unsafe int SizeOf<T>() where T : struct
         {
-            return InternalInterop.SizeOfInline<T>();
+            return Marshal.SizeOf (default(T));
         }
 
         /// <summary>
@@ -554,30 +529,7 @@ namespace Assimp
         /// <returns>Total size, in bytes, of the array's contents.</returns>
         public static int SizeOf<T>(T[] array) where T : struct
         {
-            return array == null ? 0 : array.Length * InternalInterop.SizeOfInline<T>();
-        }
-
-        /// <summary>
-        /// Adds an offset to the pointer.
-        /// </summary>
-        /// <param name="ptr">Pointer.</param>
-        /// <param name="offset">Offset</param>
-        /// <returns>New pointer</returns>
-        public static IntPtr AddIntPtr(IntPtr ptr, int offset)
-        {
-            return new IntPtr(ptr.ToInt64() + offset);
-        }
-
-        /// <summary>
-        /// Adds an offset to the pointer, taking into account the pointer alignment.
-        /// </summary>
-        /// <param name="ptr">Pointer.</param>
-        /// <param name="offset">Offset.</param>
-        /// <returns>New pointer</returns>
-        public static IntPtr AddIntPtrAligned(IntPtr ptr, int offset)
-        {
-            int pad = (int) (ptr.ToInt64() % (long) IntPtr.Size);
-            return AddIntPtr(ptr, offset + pad);
+            return array == null ? 0 : array.Length * SizeOf<T>();
         }
 
         /// <summary>
@@ -588,103 +540,12 @@ namespace Assimp
         /// <param name="sizeInBytesToCopy">Number of bytes to copy</param>
         public static unsafe void CopyMemory(IntPtr pDest, IntPtr pSrc, int sizeInBytesToCopy)
         {
-            InternalInterop.MemCopyInline((void*) pDest, (void*) pSrc, sizeInBytesToCopy);
+            var bp = (byte*)pDest; 
+            var sp = (byte*)pSrc;
+            while (sizeInBytesToCopy-- > 0)
+                *bp++ = *sp++;
         }
-
-        /// <summary>
-        /// Converts typed element array to a byte array.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="source">Element array</param>
-        /// <returns>Byte array copy or null if the array was not valid.</returns>
-        public static unsafe byte[] ToByteArray<T>(T[] source) where T : struct
-        {
-            if(source == null || source.Length == 0)
-                return null;
-
-            byte[] buffer = new byte[SizeOf<T>() * source.Length];
-
-            fixed(void* pBuffer = buffer)
-            {
-                Write<T>((IntPtr) pBuffer, source, 0, source.Length);
-            }
-
-            return buffer;
-        }
-
-        /// <summary>
-        /// Reads data from the memory location into the array.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pSrc">Pointer to memory location</param>
-        /// <param name="data">Array to store the copied data</param>
-        /// <param name="startIndexInArray">Zero-based element index to start writing data to in the element array.</param>
-        /// <param name="count">Number of elements to copy</param>
-        public static unsafe void Read<T>(IntPtr pSrc, T[] data, int startIndexInArray, int count) where T : struct
-        {
-            InternalInterop.ReadArray<T>(pSrc, data, startIndexInArray, count);
-        }
-
-        /// <summary>
-        /// Reads a single element from the memory location.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pSrc">Pointer to memory location</param>
-        /// <returns>The read value</returns>
-        public static unsafe T Read<T>(IntPtr pSrc) where T : struct
-        {
-            return InternalInterop.ReadInline<T>((void*) pSrc);
-        }
-
-        /// <summary>
-        /// Reads a single element from the memory location, taking into account the alignment.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pSrc">Pointer to memory location</param>
-        /// <returns>The read value</returns>
-        public static unsafe T ReadAligned<T>(IntPtr pSrc) where T : struct
-        {
-            int pad = (int) (pSrc.ToInt64() % (long) IntPtr.Size);
-
-            return InternalInterop.ReadInline<T>((void*) AddIntPtr(pSrc, pad));
-        }
-
-        /// <summary>
-        /// Writes data from the array to the memory location.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pDest">Pointer to memory location</param>
-        /// <param name="data">Array containing data to write</param>
-        /// <param name="startIndexInArray">Zero-based element index to start reading data from in the element array.</param>
-        /// <param name="count">Number of elements to copy</param>
-        public static unsafe void Write<T>(IntPtr pDest, T[] data, int startIndexInArray, int count) where T : struct
-        {
-            InternalInterop.WriteArray<T>(pDest, data, startIndexInArray, count);
-        }
-
-        /// <summary>
-        /// Writes a single element to the memory location.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pDest">Pointer to memory location</param>
-        /// <param name="data">The value to write</param>
-        public static unsafe void Write<T>(IntPtr pDest, ref T data) where T : struct
-        {
-            InternalInterop.WriteInline<T>((void*) pDest, ref data);
-        }
-
-        /// <summary>
-        /// Writes a single element to the memory location, taking into account the alignment.
-        /// </summary>
-        /// <typeparam name="T">Struct type</typeparam>
-        /// <param name="pDest">Pointer to memory location</param>
-        /// <param name="data">The value to write</param>
-        public static unsafe void WriteAligned<T>(IntPtr pDest, ref T data) where T : struct
-        {
-            int pad = (int)(pDest.ToInt64() % (long) IntPtr.Size);
-
-            InternalInterop.WriteInline<T>((void*) AddIntPtr(pDest, pad), ref data);
-        }
+            
 
         #endregion
 

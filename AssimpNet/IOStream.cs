@@ -219,7 +219,7 @@ namespace Assimp
             Dispose();
         }
 
-        private UIntPtr OnAiFileWriteProc(IntPtr file, IntPtr dataToWrite, UIntPtr sizeOfElemInBytes, UIntPtr numElements)
+        private unsafe UIntPtr OnAiFileWriteProc(IntPtr file, IntPtr dataToWrite, UIntPtr sizeOfElemInBytes, UIntPtr numElements)
         {
             if(m_filePtr != file)
                 return UIntPtr.Zero;
@@ -229,7 +229,9 @@ namespace Assimp
             long count = longSize * longNum;
 
             byte[] byteBuffer = GetByteBuffer(longSize, longNum);
-            MemoryHelper.Read<byte>(dataToWrite, byteBuffer, 0, (int) count);
+            var bPtr = (byte*)dataToWrite;
+            for (int i = 0; i < count; i++)
+                byteBuffer [i] = *bPtr++;
 
             long actualCount = 0;
 
@@ -242,7 +244,7 @@ namespace Assimp
             return new UIntPtr((ulong) actualCount);
         }
 
-        private UIntPtr OnAiFileReadProc(IntPtr file, IntPtr dataRead, UIntPtr sizeOfElemInBytes, UIntPtr numElements)
+        private unsafe UIntPtr OnAiFileReadProc(IntPtr file, IntPtr dataRead, UIntPtr sizeOfElemInBytes, UIntPtr numElements)
         {
             if(m_filePtr != file)
                 return UIntPtr.Zero;
@@ -258,7 +260,9 @@ namespace Assimp
             try
             {
                 actualCount = Read(byteBuffer, count);
-                MemoryHelper.Write<byte>(dataRead, byteBuffer, 0, (int) actualCount);
+                var bPtr = (byte*)dataRead;
+                for(int i = 0; i < actualCount; i++)
+                    *bPtr++ = byteBuffer[i];
             }
             catch(Exception) { /*Assimp will report an IO error*/ }
 

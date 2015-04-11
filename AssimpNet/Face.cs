@@ -133,12 +133,12 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public static unsafe void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiFace aiFace = MemoryHelper.Read<AiFace>(nativeValue);
+            AiFace aiFace = *((AiFace*)nativeValue);
 
             if(aiFace.NumIndices > 0 && aiFace.Indices != IntPtr.Zero)
                 MemoryHelper.FreeMemory(aiFace.Indices);

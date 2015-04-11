@@ -344,10 +344,11 @@ namespace Assimp
         /// Gets the property raw data as a float.
         /// </summary>
         /// <returns>Float</returns>
-        public float GetFloatValue()
+        public unsafe float GetFloatValue()
         {
-            if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
-                return GetValueAs<float>();
+            if (m_type == PropertyType.Float || m_type == PropertyType.Integer)
+                fixed(byte* ptr = m_rawValue)
+                    return *((float*)ptr);
 
             return 0;
         }
@@ -357,22 +358,30 @@ namespace Assimp
         /// </summary>
         /// <param name="value">Float.</param>
         /// <returns>True if successful, false otherwise</returns>
-        public bool SetFloatValue(float value)
+        public unsafe bool SetFloatValue(float value)
         {
             if(m_type != PropertyType.Float && m_type != PropertyType.Integer)
                 return false;
 
-            return SetValueAs<float>(value);
+            //Resize byte array if necessary
+            if(m_rawValue == null || m_rawValue.Length != sizeof(float))
+                m_rawValue = new byte[sizeof(float)];
+
+            fixed(byte* ptr = m_rawValue)
+                *((float*)ptr) = value;
+
+            return true;
         }
 
         /// <summary>
         /// Gets the property raw data as an integer.
         /// </summary>
         /// <returns>Integer</returns>
-        public int GetIntegerValue()
+        public unsafe int GetIntegerValue()
         {
-            if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
-                return GetValueAs<int>();
+            if (m_type == PropertyType.Float || m_type == PropertyType.Integer)
+                fixed(byte* ptr = m_rawValue)
+                    return *((int*)ptr);
 
             return 0;
         }
@@ -382,12 +391,20 @@ namespace Assimp
         /// </summary>
         /// <param name="value">Integer</param>
         /// <returns>True if successful, false otherwise</returns>
-        public bool SetIntegerValue(int value)
+        public unsafe bool SetIntegerValue(int value)
         {
             if(m_type != PropertyType.Float && m_type != PropertyType.Integer)
                 return false;
 
-            return SetValueAs<int>(value);
+
+            //Resize byte array if necessary
+            if(m_rawValue == null || m_rawValue.Length != sizeof(int))
+                m_rawValue = new byte[sizeof(int)];
+
+            fixed(byte* ptr = m_rawValue)
+            *((int*)ptr) = value;
+
+            return true;
         }
 
         /// <summary>
@@ -421,11 +438,21 @@ namespace Assimp
         /// </summary>
         /// <param name="count">Number of elements to get</param>
         /// <returns>Float array</returns>
-        public float[] GetFloatArrayValue(int count)
+        public unsafe float[] GetFloatArrayValue(int count)
         {
-            if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
-                return GetValueArrayAs<float>(count);
-
+            if (m_type == PropertyType.Float || m_type == PropertyType.Integer) 
+            {
+                if (m_rawValue != null && (m_rawValue.Length >= (sizeof(float) * count))) 
+                {
+                    float[] array = new float[count];
+                    fixed(byte* ptr = m_rawValue) {
+                        float* ptr2 = (float*)ptr;
+                        for (int i = 0; i < count; i++)
+                            array [i] = *ptr2++;
+                    }
+                    return array;
+                }
+            }
             return null;
         }
 
@@ -433,12 +460,21 @@ namespace Assimp
         /// Gets the property raw data as a float array.
         /// </summary>
         /// <returns>Float array</returns>
-        public float[] GetFloatArrayValue()
+        public unsafe float[] GetFloatArrayValue()
         {
             if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
             {
                 int count = ByteCount / sizeof(float);
-                return GetValueArrayAs<float>(count);
+                if (m_rawValue != null) 
+                {
+                    float[] array = new float[count];
+                    fixed(byte* ptr = m_rawValue) {
+                        float* ptr2 = (float*)ptr;
+                        for (int i = 0; i < count; i++)
+                            array [i] = *ptr2++;
+                    }
+                    return array;
+                }
             }
 
             return null;
@@ -447,14 +483,30 @@ namespace Assimp
         /// <summary>
         /// Sets the property raw data as a float array.
         /// </summary>
-        /// <param name="values">Values to set</param>
+        /// <param name="data">Values to set</param>
         /// <returns>True if successful, otherwise false</returns>
-        public bool SetFloatArrayValue(float[] values)
+        public unsafe bool SetFloatArrayValue(float[] data)
         {
             if(m_type != PropertyType.Float && m_type != PropertyType.Integer)
                 return false;
 
-            return SetValueArrayAs<float>(values);
+            if(data == null || data.Length == 0)
+                return false;
+
+            int size = data.Length * sizeof(float);
+
+            //Resize byte array if necessary
+            if(m_rawValue == null || m_rawValue.Length != size)
+                m_rawValue = new byte[size];
+
+            fixed(byte* ptr = m_rawValue)
+            {
+                var dptr = (float*)ptr;
+                for (int i = 0; i < data.Length; i++)
+                    *dptr++ = data [i];
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -462,11 +514,19 @@ namespace Assimp
         /// </summary>
         /// <param name="count">Number of elements to get</param>
         /// <returns>Integer array</returns>
-        public int[] GetIntegerArrayValue(int count)
+        public unsafe int[] GetIntegerArrayValue(int count)
         {
             if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
-                return GetValueArrayAs<int>(count);
-
+            if (m_rawValue != null && (m_rawValue.Length >= (sizeof(int) * count))) 
+            {
+                int[] array = new int[count];
+                fixed(byte* ptr = m_rawValue) {
+                    int* ptr2 = (int*)ptr;
+                    for (int i = 0; i < count; i++)
+                        array [i] = *ptr2++;
+                }
+                return array;
+            }
             return null;
         }
 
@@ -474,12 +534,21 @@ namespace Assimp
         /// Gets the property raw data as an integer array.
         /// </summary>
         /// <returns>Integer array</returns>
-        public int[] GetIntegerArrayValue()
+        public unsafe int[] GetIntegerArrayValue()
         {
             if(m_type == PropertyType.Float || m_type == PropertyType.Integer)
             {
                 int count = ByteCount / sizeof(int);
-                return GetValueArrayAs<int>(count);
+                if (m_rawValue != null) 
+                {
+                    int[] array = new int[count];
+                    fixed(byte* ptr = m_rawValue) {
+                        int* ptr2 = (int*)ptr;
+                        for (int i = 0; i < count; i++)
+                            array [i] = *ptr2++;
+                    }
+                    return array;
+                }
             }
 
             return null;
@@ -488,14 +557,30 @@ namespace Assimp
         /// <summary>
         /// Sets the property raw data as an integer array.
         /// </summary>
-        /// <param name="values">Values to set</param>
+        /// <param name="data">Values to set</param>
         /// <returns>True if successful, otherwise false</returns>
-        public bool SetIntegerArrayValue(int[] values)
+        public unsafe bool SetIntegerArrayValue(int[] data)
         {
             if(m_type != PropertyType.Float && m_type != PropertyType.Integer)
                 return false;
 
-            return SetValueArrayAs<int>(values);
+            if(data == null || data.Length == 0)
+                return false;
+
+            int size = data.Length * sizeof(int);
+
+            //Resize byte array if necessary
+            if(m_rawValue == null || m_rawValue.Length != size)
+                m_rawValue = new byte[size];
+
+            fixed(byte* ptr = m_rawValue)
+            {
+                var dptr = (int*)ptr;
+                for (int i = 0; i < data.Length; i++)
+                    *dptr++ = data [i];
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -521,12 +606,13 @@ namespace Assimp
         /// Gets the property raw data as a Color3D.
         /// </summary>
         /// <returns>Color3D</returns>
-        public Color3D GetColor3DValue()
+        public unsafe Color3D GetColor3DValue()
         {
             if(m_type != PropertyType.Float)
                 return new Color3D();
 
-            return GetValueAs<Color3D>();
+            fixed(byte* ptr = m_rawValue)
+                return *((Color3D*)ptr);
         }
 
         /// <summary>
@@ -534,12 +620,19 @@ namespace Assimp
         /// </summary>
         /// <param name="value">Color3D</param>
         /// <returns>True if successful, false otherwise</returns>
-        public bool SetColor3DValue(Color3D value)
+        public unsafe bool SetColor3DValue(Color3D value)
         {
             if(m_type != PropertyType.Float)
                 return false;
+                
+            //Resize byte array if necessary
+            if(m_rawValue == null || m_rawValue.Length != sizeof(Color3D))
+                m_rawValue = new byte[sizeof(Color3D)];
 
-            return SetValueAs<Color3D>(value);
+            fixed(byte* ptr = m_rawValue)
+            *((Color3D*)ptr) = value;
+
+            return true;
         }
 
         /// <summary>
@@ -559,11 +652,11 @@ namespace Assimp
 
                     if(m_rawValue.Length >= MemoryHelper.SizeOf<Color4D>())
                     {
-                        return MemoryHelper.Read<Color4D>(new IntPtr(ptr));
+                        return *((Color4D*)ptr);
                     }
                     else if(m_rawValue.Length >= MemoryHelper.SizeOf<Color3D>())
                     {
-                        return new Color4D(MemoryHelper.Read<Color3D>(new IntPtr(ptr)), 1.0f);
+                        return new Color4D (*((Color3D*)ptr), 1.0f);
                     }
 
                 }
@@ -577,78 +670,18 @@ namespace Assimp
         /// </summary>
         /// <param name="value">Color4D</param>
         /// <returns>True if successful, false otherwise</returns>
-        public bool SetColor4DValue(Color4D value)
+        public unsafe bool SetColor4DValue(Color4D value)
         {
             if(m_type != PropertyType.Float)
                 return false;
 
-            return SetValueAs<Color4D>(value);
-        }
-
-        private unsafe T[] GetValueArrayAs<T>(int count) where T : struct
-        {
-            int size = MemoryHelper.SizeOf<T>();
-
-            if(m_rawValue != null && (m_rawValue.Length >= (size * count)))
-            {
-                T[] array = new T[count];
-                fixed(byte* ptr = m_rawValue)
-                {
-                    MemoryHelper.Read<T>(new IntPtr(ptr), array, 0, count);
-                }
-
-                return array;
-            }
-
-            return null;
-        }
-
-        private unsafe T GetValueAs<T>() where T : struct
-        {
-            int size = MemoryHelper.SizeOf<T>();
-
-            if(m_rawValue != null && m_rawValue.Length >= size)
-            {
-                fixed(byte* ptr = m_rawValue)
-                {
-                    return MemoryHelper.Read<T>(new IntPtr(ptr));
-                }
-            }
-
-            return default(T);
-        }
-
-        private unsafe bool SetValueArrayAs<T>(T[] data) where T : struct
-        {
-            if(data == null || data.Length == 0)
-                return false;
-
-            int size = MemoryHelper.SizeOf<T>(data);
 
             //Resize byte array if necessary
-            if(m_rawValue == null || m_rawValue.Length != size)
-                m_rawValue = new byte[size];
+            if(m_rawValue == null || m_rawValue.Length != sizeof(Color4D))
+                m_rawValue = new byte[sizeof(Color4D)];
 
             fixed(byte* ptr = m_rawValue)
-            {
-                MemoryHelper.Write<T>(new IntPtr(ptr), data, 0, data.Length);
-            }
-
-            return true;
-        }
-
-        private unsafe bool SetValueAs<T>(T value) where T : struct
-        {
-            int size = MemoryHelper.SizeOf<T>();
-
-            //Resize byte array if necessary
-            if(m_rawValue == null || m_rawValue.Length != size)
-                m_rawValue = new byte[size];
-
-            fixed(byte* ptr = m_rawValue)
-            {
-                MemoryHelper.Write<T>(new IntPtr(ptr), ref value);
-            }
+            *((Color4D*)ptr) = value;
 
             return true;
         }
@@ -662,10 +695,10 @@ namespace Assimp
             {
                 //String is stored as 32 bit length prefix THEN followed by zero-terminated UTF8 data (basically need to reconstruct an AiString)
                 AiString aiString;
-                aiString.Length = new UIntPtr((uint) MemoryHelper.Read<int>(new IntPtr(ptr)));
+                aiString.Length = new UIntPtr(*((uint*)ptr));
 
                 //Memcpy starting at dataPtr + sizeof(int) for length + 1 (to account for null terminator)
-                MemoryHelper.CopyMemory(new IntPtr(aiString.Data), MemoryHelper.AddIntPtr(new IntPtr(ptr), sizeof(int)), (int) aiString.Length.ToUInt32() + 1);
+                MemoryHelper.CopyMemory(new IntPtr(aiString.Data), new IntPtr(ptr + sizeof(int)), (int) aiString.Length.ToUInt32() + 1);
 
                 return aiString.GetString();
             }
@@ -689,9 +722,11 @@ namespace Assimp
 
             fixed(byte* bytePtr = &data[0])
             {
-                MemoryHelper.Write<int>(new IntPtr(bytePtr), ref stringSize);
+                *((int*)bytePtr) = stringSize;
                 byte[] utfBytes = Encoding.UTF8.GetBytes(value);
-                MemoryHelper.Write<byte>(new IntPtr(bytePtr + sizeof(int)), utfBytes, 0, utfBytes.Length);
+                byte* wp = bytePtr + sizeof(int);
+                for (int i = 0; i < utfBytes.Length; i++)
+                    *wp++ = utfBytes [i];
                 //Last byte should be zero
             }
 
@@ -756,12 +791,13 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public static unsafe void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiMaterialProperty aiMatProp = MemoryHelper.Read<AiMaterialProperty>(nativeValue);
+            AiMaterialProperty aiMatProp = *((AiMaterialProperty*)nativeValue);
+
 
             if(aiMatProp.DataLength > 0 && aiMatProp.Data != IntPtr.Zero)
                 MemoryHelper.FreeMemory(aiMatProp.Data);

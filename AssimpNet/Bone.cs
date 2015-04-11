@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -35,7 +36,7 @@ namespace Assimp
     {
         private String m_name;
         private List<VertexWeight> m_weights;
-        private Matrix4x4 m_offsetMatrix;
+        private Matrix3x3 m_offsetMatrix;
 
         /// <summary>
         /// Gets or sets the name of the bone.
@@ -88,7 +89,7 @@ namespace Assimp
         /// <summary>
         /// Gets or sets the matrix that transforms from mesh space to bone space in bind pose.
         /// </summary>
-        public Matrix4x4 OffsetMatrix
+        public Matrix3x3 OffsetMatrix
         {
             get
             {
@@ -171,14 +172,12 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public static unsafe void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiBone aiBone = MemoryHelper.Read<AiBone>(nativeValue);
-            int numWeights = MemoryHelper.Read<int>(MemoryHelper.AddIntPtr(nativeValue, MemoryHelper.SizeOf<AiString>()));
-            IntPtr weightsPtr = MemoryHelper.AddIntPtr(nativeValue, MemoryHelper.SizeOf<AiString>() + sizeof(uint));
+            AiBone aiBone = *((AiBone*)nativeValue);
 
             if(aiBone.NumWeights > 0 && aiBone.Weights != IntPtr.Zero)
                 MemoryHelper.FreeMemory(aiBone.Weights);

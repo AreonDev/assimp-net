@@ -22,6 +22,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -35,12 +36,12 @@ namespace Assimp
         /// <summary>
         /// Translation on the U and V axes. Default is 0|0
         /// </summary>
-        public Vector2D Translation;
+        public Vector2 Translation;
 
         /// <summary>
         /// Scaling on the U and V axes. Default is 1|1.
         /// </summary>
-        public Vector2D Scaling;
+        public Vector2 Scaling;
 
         /// <summary>
         /// Rotation in counter-clockwise direction, specfied in

@@ -22,6 +22,7 @@
 
 using System;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -43,8 +44,8 @@ namespace Assimp
         private float m_attConstant;
         private float m_attLinear;
         private float m_attQuadratic;
-        private Vector3D m_position;
-        private Vector3D m_direction;
+        private Vector3 m_position;
+        private Vector3 m_direction;
         private Color3D m_diffuse;
         private Color3D m_specular;
         private Color3D m_ambient;
@@ -169,7 +170,7 @@ namespace Assimp
         /// transformation of the node corresponding to the light. This is undefined for
         /// directional lights.
         /// </summary>
-        public Vector3D Position
+        public Vector3 Position
         {
             get
             {
@@ -185,7 +186,7 @@ namespace Assimp
         /// Gets or sets the direction of the light source in space, relative to the transformation
         /// of the node corresponding to the light. This is undefined for point lights.
         /// </summary>
-        public Vector3D Direction
+        public Vector3 Direction
         {
             get
             {

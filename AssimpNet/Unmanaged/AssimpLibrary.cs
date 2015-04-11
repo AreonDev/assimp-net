@@ -26,6 +26,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
+using FreezingArcher.Math;
 
 namespace Assimp.Unmanaged
 {
@@ -310,7 +311,7 @@ namespace Assimp.Unmanaged
         /// Gets all supported export formats.
         /// </summary>
         /// <returns>Array of supported export formats.</returns>
-        public ExportFormatDescription[] GetExportFormatDescriptions()
+        public unsafe ExportFormatDescription[] GetExportFormatDescriptions()
         {
             LoadIfNotLoaded();
 
@@ -328,7 +329,7 @@ namespace Assimp.Unmanaged
                 IntPtr formatDescPtr = func(new UIntPtr((uint)i));
                 if(formatDescPtr != IntPtr.Zero)
                 {
-                    AiExportFormatDesc desc = MemoryHelper.Read<AiExportFormatDesc>(formatDescPtr);
+                    AiExportFormatDesc desc = *((AiExportFormatDesc*)formatDescPtr);
                     descriptions[i] = new ExportFormatDescription(ref desc);
                 }
             }
@@ -344,7 +345,7 @@ namespace Assimp.Unmanaged
         /// <param name="formatId">Format id describing which format to export to.</param>
         /// <param name="preProcessing">Pre processing flags to operate on the scene during the export.</param>
         /// <returns>Exported binary blob, or null if there was an error.</returns>
-        public ExportDataBlob ExportSceneToBlob(IntPtr scene, String formatId, PostProcessSteps preProcessing)
+        public unsafe ExportDataBlob ExportSceneToBlob(IntPtr scene, String formatId, PostProcessSteps preProcessing)
         {
             LoadIfNotLoaded();
 
@@ -359,7 +360,7 @@ namespace Assimp.Unmanaged
             if(blobPtr == IntPtr.Zero)
                 return null;
 
-            AiExportDataBlob blob = MemoryHelper.Read<AiExportDataBlob>(blobPtr);
+            AiExportDataBlob blob = *((AiExportDataBlob*)blobPtr);
             ExportDataBlob dataBlob = new ExportDataBlob(ref blob);
             releaseExportBlobFunc(blobPtr);
 
@@ -587,7 +588,7 @@ namespace Assimp.Unmanaged
         /// <param name="propertyStore">Pointer to property store</param>
         /// <param name="name">Property name</param>
         /// <param name="value">Property value</param>
-        public void SetImportPropertyMatrix(IntPtr propertyStore, String name, Matrix4x4 value)
+        public void SetImportPropertyMatrix(IntPtr propertyStore, String name, Matrix value)
         {
             LoadIfNotLoaded();
 
@@ -610,7 +611,7 @@ namespace Assimp.Unmanaged
         /// <param name="texType">Texture Type semantic, always zero for non-texture properties</param>
         /// <param name="texIndex">Texture index, always zero for non-texture properties</param>
         /// <returns>The color if it exists. If not, the default Color4D value is returned.</returns>
-        public Color4D GetMaterialColor(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
+        public unsafe Color4D GetMaterialColor(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
         {
             LoadIfNotLoaded();
 
@@ -623,7 +624,7 @@ namespace Assimp.Unmanaged
                 ReturnCode code = func(ref mat, key, (uint) texType, texIndex, ptr);
                 Color4D color = new Color4D();
                 if(code == ReturnCode.Success && ptr != IntPtr.Zero)
-                    color = MemoryHelper.Read<Color4D>(ptr);
+                    color = *((Color4D*)ptr);
                 
                 return color;
             }
@@ -644,7 +645,7 @@ namespace Assimp.Unmanaged
         /// <param name="floatCount">The maximum number of floats to read. This may not accurately describe the data returned, as it may not exist or be smaller. If this value is less than
         /// the available floats, then only the requested number is returned (e.g. 1 or 2 out of a 4 float array).</param>
         /// <returns>The float array, if it exists</returns>
-        public float[] GetMaterialFloatArray(ref AiMaterial mat, String key, TextureType texType, uint texIndex, uint floatCount)
+        public unsafe float[] GetMaterialFloatArray(ref AiMaterial mat, String key, TextureType texType, uint texIndex, uint floatCount)
         {
             LoadIfNotLoaded();
 
@@ -659,7 +660,9 @@ namespace Assimp.Unmanaged
                 if(code == ReturnCode.Success && floatCount > 0)
                 {
                     array = new float[floatCount];
-                    MemoryHelper.Read<float>(ptr, array, 0, (int) floatCount);
+                    var fptr = (float*)ptr;
+                    for(int i = 0; i < floatCount; i++)
+                        array[i] = *fptr++;
                 }
                 return array;
             }
@@ -682,7 +685,7 @@ namespace Assimp.Unmanaged
         /// <param name="intCount">The maximum number of integers to read. This may not accurately describe the data returned, as it may not exist or be smaller. If this value is less than
         /// the available integers, then only the requested number is returned (e.g. 1 or 2 out of a 4 float array).</param>
         /// <returns>The integer array, if it exists</returns>
-        public int[] GetMaterialIntegerArray(ref AiMaterial mat, String key, TextureType texType, uint texIndex, uint intCount)
+        public unsafe int[] GetMaterialIntegerArray(ref AiMaterial mat, String key, TextureType texType, uint texIndex, uint intCount)
         {
             LoadIfNotLoaded();
 
@@ -697,7 +700,10 @@ namespace Assimp.Unmanaged
                 if(code == ReturnCode.Success && intCount > 0)
                 {
                     array = new int[intCount];
-                    MemoryHelper.Read<int>(ptr, array, 0, (int) intCount);
+                    var iptr = (int*)ptr;
+                    for(int i =0; i<  intCount; i++)
+                        array[i] = *iptr++;
+
                 }
                 return array;
             }
@@ -718,7 +724,7 @@ namespace Assimp.Unmanaged
         /// <param name="texType">Texture Type semantic, always zero for non-texture properties</param>
         /// <param name="texIndex">Texture index, always zero for non-texture properties</param>
         /// <returns>The material property, if found.</returns>
-        public AiMaterialProperty GetMaterialProperty(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
+        public unsafe AiMaterialProperty GetMaterialProperty(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
         {
             LoadIfNotLoaded();
 
@@ -728,7 +734,7 @@ namespace Assimp.Unmanaged
             ReturnCode code = func(ref mat, key, (uint) texType, texIndex, out ptr);
             AiMaterialProperty prop = new AiMaterialProperty();
             if(code == ReturnCode.Success && ptr != IntPtr.Zero)
-                prop = MemoryHelper.Read<AiMaterialProperty>(ptr);
+                prop = *((AiMaterialProperty*)ptr);
                 
             return prop;
         }
@@ -823,8 +829,9 @@ namespace Assimp.Unmanaged
             uint flags;
 
             ReturnCode code = func(ref mat, type, index, out str, out mapping, out uvIndex, out blendFactor, out texOp, wrapModes, out flags);
-
-            return new TextureSlot(str.GetString(), type, (int) index, mapping, (int) uvIndex, blendFactor, texOp, wrapModes[0], wrapModes[1], (int) flags);
+            if(code == ReturnCode.Success)
+                return new TextureSlot(str.GetString(), type, (int) index, mapping, (int) uvIndex, blendFactor, texOp, wrapModes[0], wrapModes[1], (int) flags);
+            return default(TextureSlot);
         }
 
         #endregion
@@ -923,7 +930,7 @@ namespace Assimp.Unmanaged
         /// <param name="scaling">Scaling vector</param>
         /// <param name="rotation">Quaternion containing the rotation</param>
         /// <param name="position">Translation vector</param>
-        public void DecomposeMatrix(ref Matrix4x4 mat, out Vector3D scaling, out Quaternion rotation, out Vector3D position)
+        public void DecomposeMatrix(ref Matrix mat, out Vector3 scaling, out Quaternion rotation, out Vector3 position)
         {
             LoadIfNotLoaded();
 
@@ -936,7 +943,7 @@ namespace Assimp.Unmanaged
         /// Transposes the 4x4 matrix.
         /// </summary>
         /// <param name="mat">Matrix to transpose</param>
-        public void TransposeMatrix4(ref Matrix4x4 mat)
+        public void TransposeMatrix4(ref Matrix mat)
         {
             LoadIfNotLoaded();
 
@@ -963,7 +970,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="vec">Vector to transform</param>
         /// <param name="mat">Rotation matrix</param>
-        public void TransformVecByMatrix3(ref Vector3D vec, ref Matrix3x3 mat)
+        public void TransformVecByMatrix3(ref Vector3 vec, ref Matrix3x3 mat)
         {
             LoadIfNotLoaded();
 
@@ -977,7 +984,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="vec">Vector to transform</param>
         /// <param name="mat">Matrix transformation</param>
-        public void TransformVecByMatrix4(ref Vector3D vec, ref Matrix4x4 mat)
+        public void TransformVecByMatrix4(ref Vector3 vec, ref Matrix mat)
         {
             LoadIfNotLoaded();
 
@@ -991,7 +998,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="dst">First input matrix and is also the Matrix to receive the result</param>
         /// <param name="src">Second input matrix, to be multiplied with "dst".</param>
-        public void MultiplyMatrix4(ref Matrix4x4 dst, ref Matrix4x4 src)
+        public void MultiplyMatrix4(ref Matrix dst, ref Matrix src)
         {
             LoadIfNotLoaded();
 
@@ -1031,7 +1038,7 @@ namespace Assimp.Unmanaged
         /// Creates a 4x4 identity matrix.
         /// </summary>
         /// <param name="mat">Matrix to hold the identity</param>
-        public void IdentityMatrix4(out Matrix4x4 mat)
+        public void IdentityMatrix4(out Matrix mat)
         {
             LoadIfNotLoaded();
 
@@ -1352,7 +1359,7 @@ namespace Assimp.Unmanaged
         public delegate void aiSetImportPropertyString(IntPtr propertyStore, [In, MarshalAs(UnmanagedType.LPStr)] String name, ref AiString value);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiSetImportPropertyMatrix)]
-        public delegate void aiSetImportPropertyMatrix(IntPtr propertyStore, [In, MarshalAs(UnmanagedType.LPStr)] String name, ref Matrix4x4 value);
+        public delegate void aiSetImportPropertyMatrix(IntPtr propertyStore, [In, MarshalAs(UnmanagedType.LPStr)] String name, ref Matrix value);
 
         #endregion
 
@@ -1387,22 +1394,22 @@ namespace Assimp.Unmanaged
         public delegate void aiCreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3x3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiDecomposeMatrix)]
-        public delegate void aiDecomposeMatrix(ref Matrix4x4 mat, out Vector3D scaling, out Quaternion rotation, out Vector3D position);
+        public delegate void aiDecomposeMatrix(ref Matrix mat, out Vector3 scaling, out Quaternion rotation, out Vector3 position);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransposeMatrix4)]
-        public delegate void aiTransposeMatrix4(ref Matrix4x4 mat);
+        public delegate void aiTransposeMatrix4(ref Matrix mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransposeMatrix3)]
         public delegate void aiTransposeMatrix3(ref Matrix3x3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransformVecByMatrix3)]
-        public delegate void aiTransformVecByMatrix3(ref Vector3D vec, ref Matrix3x3 mat);
+        public delegate void aiTransformVecByMatrix3(ref Vector3 vec, ref Matrix3x3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransformVecByMatrix4)]
-        public delegate void aiTransformVecByMatrix4(ref Vector3D vec, ref Matrix4x4 mat);
+        public delegate void aiTransformVecByMatrix4(ref Vector3 vec, ref Matrix mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiMultiplyMatrix4)]
-        public delegate void aiMultiplyMatrix4(ref Matrix4x4 dst, ref Matrix4x4 src);
+        public delegate void aiMultiplyMatrix4(ref Matrix dst, ref Matrix src);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiMultiplyMatrix3)]
         public delegate void aiMultiplyMatrix3(ref Matrix3x3 dst, ref Matrix3x3 src);
@@ -1411,7 +1418,7 @@ namespace Assimp.Unmanaged
         public delegate void aiIdentityMatrix3(out Matrix3x3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiIdentityMatrix4)]
-        public delegate void aiIdentityMatrix4(out Matrix4x4 mat);
+        public delegate void aiIdentityMatrix4(out Matrix mat);
 
         #endregion
 

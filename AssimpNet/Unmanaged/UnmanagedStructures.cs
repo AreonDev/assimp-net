@@ -23,6 +23,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using FreezingArcher.Math;
 
 namespace Assimp.Unmanaged
 {
@@ -124,7 +125,7 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Node's transform relative to its parent.
         /// </summary>
-        public Matrix4x4 Transformation;
+        public Matrix Transformation;
 
         /// <summary>
         /// aiNode*, node's parent.
@@ -399,7 +400,7 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Matrix that transforms the vertex from mesh to bone space in bind pose
         /// </summary>
-        public Matrix4x4 OffsetMatrix;
+        public Matrix3x3 OffsetMatrix;
     }
 
     /// <summary>
@@ -610,12 +611,12 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Position of the light.
         /// </summary>
-        public Vector3D Position;
+        public Vector3 Position;
 
         /// <summary>
         /// Direction of the spot/directional light.
         /// </summary>
-        public Vector3D Direction;
+        public Vector3 Direction;
 
         /// <summary>
         /// Attenuation constant value.
@@ -673,17 +674,17 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Position of the camera.
         /// </summary>
-        public Vector3D Position;
+        public Vector3 Position;
 
         /// <summary>
         /// Up vector of the camera.
         /// </summary>
-        public Vector3D Up;
+        public Vector3 Up;
 
         /// <summary>
         /// Viewing direction of the camera.
         /// </summary>
-        public Vector3D LookAt;
+        public Vector3 LookAt;
 
         /// <summary>
         /// Field Of View of the camera.
@@ -749,7 +750,9 @@ namespace Assimp.Unmanaged
 
                 fixed(byte* bytePtr = Data)
                 {
-                    MemoryHelper.Read<byte>(new IntPtr(bytePtr), copy, 0, length);
+                    var wp = bytePtr;
+                    for (int i = 0; i < length; i++)
+                        copy [i] = *wp++;
                 }
 
                 //Note: aiTypes.h specifies aiString is UTF-8 encoded string.
@@ -786,7 +789,11 @@ namespace Assimp.Unmanaged
                 if(copy.Length > 0)
                 {
                     fixed(byte* bytePtr = Data)
-                        MemoryHelper.Write<byte>(new IntPtr(bytePtr), copy, 0, copy.Length);
+                    {
+                        var wp = bytePtr;
+                        for (int i = 0; i < copy.Length; i++)
+                            copy [i] = *wp++;
+                    }
                 }
 
                 Length = new UIntPtr((uint) copy.Length);

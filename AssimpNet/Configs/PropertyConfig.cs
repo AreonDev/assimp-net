@@ -23,6 +23,7 @@
 using System;
 using System.Text;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp.Configs
 {
@@ -227,17 +228,17 @@ namespace Assimp.Configs
     }
 
     /// <summary>
-    /// Describes a <see cref="Matrix4x4"/> configuration property.
+    /// Describes a <see cref="FreezingArcher.Math.Matrix"/> configuration property.
     /// </summary>
     public class MatrixPropertyConfig : PropertyConfig
     {
-        private Matrix4x4 m_value;
-        private Matrix4x4 m_defaultValue;
+        private Matrix m_value;
+        private Matrix m_defaultValue;
 
         /// <summary>
         /// Gets the property value.
         /// </summary>
-        public Matrix4x4 Value
+        public Matrix Value
         {
             get
             {
@@ -252,7 +253,7 @@ namespace Assimp.Configs
         /// <summary>
         /// Gets the default property value.
         /// </summary>
-        public Matrix4x4 DefaultValue
+        public Matrix DefaultValue
         {
             get
             {
@@ -265,8 +266,8 @@ namespace Assimp.Configs
         /// </summary>
         /// <param name="name">Name of the property</param>
         /// <param name="value">Property value</param>
-        public MatrixPropertyConfig(String name, Matrix4x4 value)
-            : this(name, value, Matrix4x4.Identity) { }
+        public MatrixPropertyConfig(String name, Matrix value)
+            : this(name, value, Matrix.Identity) { }
 
         /// <summary>
         /// Constructs a new MatrixPropertyConfig.
@@ -274,7 +275,7 @@ namespace Assimp.Configs
         /// <param name="name">Name of the property</param>
         /// <param name="value">Property value</param>
         /// <param name="defaultValue">The default property value</param>
-        public MatrixPropertyConfig(String name, Matrix4x4 value, Matrix4x4 defaultValue)
+        public MatrixPropertyConfig(String name, Matrix value, Matrix defaultValue)
             : base(name)
         {
             m_value = value;
@@ -1202,8 +1203,8 @@ namespace Assimp.Configs
         /// Constructs a new RootTransformationConfig.
         /// </summary>
         /// <param name="rootTransform">Root transformation matrix to be set to the root scene node during the pretransform post process step.</param>
-        public RootTransformationConfig(Matrix4x4 rootTransform)
-            : base(RootTransformationConfigName, rootTransform, Matrix4x4.Identity) { }
+        public RootTransformationConfig(Matrix rootTransform)
+            : base(RootTransformationConfigName, rootTransform, Matrix.Identity) { }
 
         /// <summary>
         /// Applies the property value to the given Assimp property store.

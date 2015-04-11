@@ -453,12 +453,12 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public unsafe static void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiScene aiScene = MemoryHelper.Read<AiScene>(nativeValue);
+            AiScene aiScene = *((AiScene*)nativeValue);
 
             if(aiScene.NumMaterials > 0 && aiScene.Materials != IntPtr.Zero)
                 MemoryHelper.FreeNativeArray<AiMaterial>(aiScene.Materials, (int) aiScene.NumMaterials, Material.FreeNative, true);

@@ -1,0 +1,7 @@
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/bin/Net20-Debug/AssimpNet.Interop.Generator.exe.config
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/bin/Net20-Debug/AssimpNet.Interop.Generator.exe.mdb
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/bin/Net20-Debug/AssimpNet.Interop.Generator.exe
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/obj/Net20-Debug/AssimpNet.Interop.Generator.exe
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/obj/Net20-Debug/AssimpNet.Interop.Generator.exe.mdb
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/bin/Net20-Debug/Mono.Cecil.dll
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet.Interop.Generator/bin/Net20-Debug/Mono.Cecil.Pdb.dll

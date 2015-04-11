@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -34,13 +35,13 @@ namespace Assimp
         private String m_name;
         private PrimitiveType m_primitiveType;
         private int m_materialIndex;
-        private List<Vector3D> m_vertices;
-        private List<Vector3D> m_normals;
-        private List<Vector3D> m_tangents;
-        private List<Vector3D> m_bitangents;
+        private List<Vector3> m_vertices;
+        private List<Vector3> m_normals;
+        private List<Vector3> m_tangents;
+        private List<Vector3> m_bitangents;
         private List<Face> m_faces;
         private List<Color4D>[] m_colors;
-        private List<Vector3D>[] m_texCoords;
+        private List<Vector3>[] m_texCoords;
         private int[] m_texComponentCount;
         private List<Bone> m_bones;
         private List<MeshAnimationAttachment> m_meshAttachments;
@@ -123,7 +124,7 @@ namespace Assimp
         /// <summary>
         /// Gets the vertex position list.
         /// </summary>
-        public List<Vector3D> Vertices
+        public List<Vector3> Vertices
         {
             get
             {
@@ -145,7 +146,7 @@ namespace Assimp
         /// <summary>
         /// Gets the vertex normal list.
         /// </summary>
-        public List<Vector3D> Normals
+        public List<Vector3> Normals
         {
             get
             {
@@ -168,7 +169,7 @@ namespace Assimp
         /// <summary>
         /// Gets the vertex tangent list.
         /// </summary>
-        public List<Vector3D> Tangents
+        public List<Vector3> Tangents
         {
             get
             {
@@ -179,7 +180,7 @@ namespace Assimp
         /// <summary>
         /// Gets the vertex bitangent list.
         /// </summary>
-        public List<Vector3D> BiTangents
+        public List<Vector3> BiTangents
         {
             get
             {
@@ -278,7 +279,7 @@ namespace Assimp
         /// Gets the array that contains each texture coordinate channel, by default all are lists of zero (but can be set to null). Each index
         /// in the array corresponds to the texture coordinate channel. The length of the array corresponds to Assimp's maximum UV channel limit.
         /// </summary>
-        public List<Vector3D>[] TextureCoordinateChannels
+        public List<Vector3>[] TextureCoordinateChannels
         {
             get
             {
@@ -393,10 +394,10 @@ namespace Assimp
             m_primitiveType = primType;
             m_materialIndex = 0;
 
-            m_vertices = new List<Vector3D>();
-            m_normals = new List<Vector3D>();
-            m_tangents = new List<Vector3D>();
-            m_bitangents = new List<Vector3D>();
+            m_vertices = new List<Vector3>();
+            m_normals = new List<Vector3>();
+            m_tangents = new List<Vector3>();
+            m_bitangents = new List<Vector3>();
             m_colors = new List<Color4D>[AiDefines.AI_MAX_NUMBER_OF_COLOR_SETS];
 
             for(int i = 0; i < m_colors.Length; i++)
@@ -404,11 +405,11 @@ namespace Assimp
                 m_colors[i] = new List<Color4D>();
             }
 
-            m_texCoords = new List<Vector3D>[AiDefines.AI_MAX_NUMBER_OF_TEXTURECOORDS];
+            m_texCoords = new List<Vector3>[AiDefines.AI_MAX_NUMBER_OF_TEXTURECOORDS];
 
             for(int i = 0; i < m_texCoords.Length; i++)
             {
-                m_texCoords[i] = new List<Vector3D>();
+                m_texCoords[i] = new List<Vector3>();
             }
 
             m_texComponentCount = new int[AiDefines.AI_MAX_NUMBER_OF_TEXTURECOORDS];
@@ -447,7 +448,7 @@ namespace Assimp
             if(channelIndex >= m_texCoords.Length || channelIndex < 0)
                 return false;
 
-            List<Vector3D> texCoords = m_texCoords[channelIndex];
+            List<Vector3> texCoords = m_texCoords[channelIndex];
 
             if(texCoords != null)
                 return texCoords.Count > 0;
@@ -581,10 +582,10 @@ namespace Assimp
 
             for(int i = 0; i < m_texCoords.Length; i++)
             {
-                List<Vector3D> texCoords = m_texCoords[i];
+                List<Vector3> texCoords = m_texCoords[i];
 
                 if(texCoords == null)
-                    m_texCoords[i] = new List<Vector3D>();
+                    m_texCoords[i] = new List<Vector3>();
                 else
                     texCoords.Clear();
             }
@@ -599,7 +600,7 @@ namespace Assimp
             m_meshAttachments.Clear();
         }
 
-        private Vector3D[] CopyTo(List<Vector3D> list, Vector3D[] copy)
+        private Vector3[] CopyTo(List<Vector3> list, Vector3[] copy)
         {
             list.CopyTo(copy);
 
@@ -644,18 +645,18 @@ namespace Assimp
             if(nativeValue.NumVertices > 0)
             {
 
-                //Since we can have so many buffers of Vector3D with same length, lets re-use a buffer
-                Vector3D[] copy = new Vector3D[nativeValue.NumVertices];
+                //Since we can have so many buffers of Vector3 with same length, lets re-use a buffer
+                Vector3[] copy = new Vector3[nativeValue.NumVertices];
 
-                nativeValue.Vertices = MemoryHelper.ToNativeArray<Vector3D>(CopyTo(m_vertices, copy));
+                nativeValue.Vertices = MemoryHelper.ToNativeArray<Vector3>(CopyTo(m_vertices, copy));
 
                 if(HasNormals)
-                    nativeValue.Normals = MemoryHelper.ToNativeArray<Vector3D>(CopyTo(m_normals, copy));
+                    nativeValue.Normals = MemoryHelper.ToNativeArray<Vector3>(CopyTo(m_normals, copy));
 
                 if(HasTangentBasis)
                 {
-                    nativeValue.Tangents = MemoryHelper.ToNativeArray<Vector3D>(CopyTo(m_tangents, copy));
-                    nativeValue.BiTangents = MemoryHelper.ToNativeArray<Vector3D>(CopyTo(m_bitangents, copy));
+                    nativeValue.Tangents = MemoryHelper.ToNativeArray<Vector3>(CopyTo(m_tangents, copy));
+                    nativeValue.BiTangents = MemoryHelper.ToNativeArray<Vector3>(CopyTo(m_bitangents, copy));
                 }
 
                 //Vertex Color channels
@@ -676,7 +677,7 @@ namespace Assimp
                 //Texture coordinate channels
                 for(int i = 0; i < m_texCoords.Length; i++)
                 {
-                    List<Vector3D> list = m_texCoords[i];
+                    List<Vector3> list = m_texCoords[i];
 
                     if(list == null || list.Count == 0)
                     {
@@ -684,7 +685,7 @@ namespace Assimp
                     }
                     else
                     {
-                        nativeValue.TextureCoords[i] = MemoryHelper.ToNativeArray<Vector3D>(CopyTo(list, copy));
+                        nativeValue.TextureCoords[i] = MemoryHelper.ToNativeArray<Vector3>(CopyTo(list, copy));
                     }
                 }
 
@@ -726,19 +727,19 @@ namespace Assimp
 
                 //Positions
                 if(nativeValue.Vertices != IntPtr.Zero)
-                    m_vertices.AddRange(MemoryHelper.FromNativeArray<Vector3D>(nativeValue.Vertices, vertexCount));
+                    m_vertices.AddRange(MemoryHelper.FromNativeArray<Vector3>(nativeValue.Vertices, vertexCount));
 
                 //Normals
                 if(nativeValue.Normals != IntPtr.Zero)
-                    m_normals.AddRange(MemoryHelper.FromNativeArray<Vector3D>(nativeValue.Normals, vertexCount));
+                    m_normals.AddRange(MemoryHelper.FromNativeArray<Vector3>(nativeValue.Normals, vertexCount));
 
                 //Tangents
                 if(nativeValue.Tangents != IntPtr.Zero)
-                    m_tangents.AddRange(MemoryHelper.FromNativeArray<Vector3D>(nativeValue.Tangents, vertexCount));
+                    m_tangents.AddRange(MemoryHelper.FromNativeArray<Vector3>(nativeValue.Tangents, vertexCount));
 
                 //BiTangents
                 if(nativeValue.BiTangents != IntPtr.Zero)
-                    m_bitangents.AddRange(MemoryHelper.FromNativeArray<Vector3D>(nativeValue.BiTangents, vertexCount));
+                    m_bitangents.AddRange(MemoryHelper.FromNativeArray<Vector3>(nativeValue.BiTangents, vertexCount));
 
                 //Vertex Color channels
                 for(int i = 0; i < nativeValue.Colors.Length; i++)
@@ -755,7 +756,7 @@ namespace Assimp
                     IntPtr texCoordsPtr = nativeValue.TextureCoords[i];
 
                     if(texCoordsPtr != IntPtr.Zero)
-                        m_texCoords[i].AddRange(MemoryHelper.FromNativeArray<Vector3D>(texCoordsPtr, vertexCount));
+                        m_texCoords[i].AddRange(MemoryHelper.FromNativeArray<Vector3>(texCoordsPtr, vertexCount));
                 }
 
                 //UV components for each tex coordinate channel
@@ -783,12 +784,12 @@ namespace Assimp
         /// </summary>
         /// <param name="nativeValue">Native value to free</param>
         /// <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        public static void FreeNative(IntPtr nativeValue, bool freeNative)
+        public unsafe static void FreeNative(IntPtr nativeValue, bool freeNative)
         {
             if(nativeValue == IntPtr.Zero)
                 return;
 
-            AiMesh aiMesh = MemoryHelper.Read<AiMesh>(nativeValue);
+            AiMesh aiMesh = *((AiMesh*)nativeValue);
 
             if(aiMesh.NumVertices > 0)
             {
