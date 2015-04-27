@@ -24,6 +24,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -307,11 +308,11 @@ namespace Assimp
         }
 
         /// <summary>
-        /// Constructs a new instance of the <see cref="MaterialProperty"/> class. Creates a Color3D property.
+        /// Constructs a new instance of the <see cref="MaterialProperty"/> class. Creates a Color3 property.
         /// </summary>
         /// <param name="baseName">Base name of the property</param>
         /// <param name="value">Property value</param>
-        public MaterialProperty(String baseName, Color3D value)
+        public MaterialProperty(String baseName, Color3 value)
         {
             m_name = baseName;
             m_type = PropertyType.Float;
@@ -324,11 +325,11 @@ namespace Assimp
         }
 
         /// <summary>
-        /// Constructs a new instance of the <see cref="MaterialProperty"/> class. Creates a Color4D property.
+        /// Constructs a new instance of the <see cref="MaterialProperty"/> class. Creates a Color4 property.
         /// </summary>
         /// <param name="baseName">Base name of the property</param>
         /// <param name="value">Property value</param>
-        public MaterialProperty(String baseName, Color4D value)
+        public MaterialProperty(String baseName, Color4 value)
         {
             m_name = baseName;
             m_type = PropertyType.Float;
@@ -603,46 +604,46 @@ namespace Assimp
         }
 
         /// <summary>
-        /// Gets the property raw data as a Color3D.
+        /// Gets the property raw data as a Color3.
         /// </summary>
-        /// <returns>Color3D</returns>
-        public unsafe Color3D GetColor3DValue()
+        /// <returns>Color3</returns>
+        public unsafe Color3 GetColor3DValue()
         {
             if(m_type != PropertyType.Float)
-                return new Color3D();
+                return new Color3();
 
             fixed(byte* ptr = m_rawValue)
-                return *((Color3D*)ptr);
+                return *((Color3*)ptr);
         }
 
         /// <summary>
-        /// Sets the property raw data as a Color3D.
+        /// Sets the property raw data as a Color3.
         /// </summary>
-        /// <param name="value">Color3D</param>
+        /// <param name="value">Color3</param>
         /// <returns>True if successful, false otherwise</returns>
-        public unsafe bool SetColor3DValue(Color3D value)
+        public unsafe bool SetColor3DValue(Color3 value)
         {
             if(m_type != PropertyType.Float)
                 return false;
                 
             //Resize byte array if necessary
-            if(m_rawValue == null || m_rawValue.Length != sizeof(Color3D))
-                m_rawValue = new byte[sizeof(Color3D)];
+            if(m_rawValue == null || m_rawValue.Length != sizeof(Color3))
+                m_rawValue = new byte[sizeof(Color3)];
 
             fixed(byte* ptr = m_rawValue)
-            *((Color3D*)ptr) = value;
+            *((Color3*)ptr) = value;
 
             return true;
         }
 
         /// <summary>
-        /// Gets the property raw data as a Color4D.
+        /// Gets the property raw data as a Color4.
         /// </summary>
-        /// <returns>Color4D</returns>
-        public Color4D GetColor4DValue()
+        /// <returns>Color4</returns>
+        public Color4 GetColor4DValue()
         {
             if(m_type != PropertyType.Float || m_rawValue == null)
-                return new Color4D();
+                return new Color4();
 
             //We may have a Color that's RGB, so still read it and set alpha to 1.0
             unsafe
@@ -650,38 +651,38 @@ namespace Assimp
                 fixed(byte* ptr = m_rawValue)
                 {
 
-                    if(m_rawValue.Length >= MemoryHelper.SizeOf<Color4D>())
+                    if(m_rawValue.Length >= MemoryHelper.SizeOf<Color4>())
                     {
-                        return *((Color4D*)ptr);
+                        return *((Color4*)ptr);
                     }
-                    else if(m_rawValue.Length >= MemoryHelper.SizeOf<Color3D>())
+                    else if(m_rawValue.Length >= MemoryHelper.SizeOf<Color3>())
                     {
-                        return new Color4D (*((Color3D*)ptr), 1.0f);
+                        return new Color4 (*((Color3*)ptr), 1.0f);
                     }
 
                 }
             }
 
-            return new Color4D();
+            return new Color4();
         }
 
         /// <summary>
-        /// Sets the property raw data as a Color4D.
+        /// Sets the property raw data as a Color4.
         /// </summary>
-        /// <param name="value">Color4D</param>
+        /// <param name="value">Color4</param>
         /// <returns>True if successful, false otherwise</returns>
-        public unsafe bool SetColor4DValue(Color4D value)
+        public unsafe bool SetColor4DValue(Color4 value)
         {
             if(m_type != PropertyType.Float)
                 return false;
 
 
             //Resize byte array if necessary
-            if(m_rawValue == null || m_rawValue.Length != sizeof(Color4D))
-                m_rawValue = new byte[sizeof(Color4D)];
+            if(m_rawValue == null || m_rawValue.Length != sizeof(Color4))
+                m_rawValue = new byte[sizeof(Color4)];
 
             fixed(byte* ptr = m_rawValue)
-            *((Color4D*)ptr) = value;
+            *((Color4*)ptr) = value;
 
             return true;
         }

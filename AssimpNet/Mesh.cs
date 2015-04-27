@@ -40,7 +40,7 @@ namespace Assimp
         private List<Vector3> m_tangents;
         private List<Vector3> m_bitangents;
         private List<Face> m_faces;
-        private List<Color4D>[] m_colors;
+        private List<Color4>[] m_colors;
         private List<Vector3>[] m_texCoords;
         private int[] m_texComponentCount;
         private List<Bone> m_bones;
@@ -267,7 +267,7 @@ namespace Assimp
         /// Gets the array that contains each vertex color channels, by default all are lists of zero (but can be set to null). Each index
         /// in the array corresponds to the texture coordinate channel. The length of the array corresponds to Assimp's maximum vertex color channel limit.
         /// </summary>
-        public List<Color4D>[] VertexColorChannels
+        public List<Color4>[] VertexColorChannels
         {
             get
             {
@@ -398,11 +398,11 @@ namespace Assimp
             m_normals = new List<Vector3>();
             m_tangents = new List<Vector3>();
             m_bitangents = new List<Vector3>();
-            m_colors = new List<Color4D>[AiDefines.AI_MAX_NUMBER_OF_COLOR_SETS];
+            m_colors = new List<Color4>[AiDefines.AI_MAX_NUMBER_OF_COLOR_SETS];
 
             for(int i = 0; i < m_colors.Length; i++)
             {
-                m_colors[i] = new List<Color4D>();
+                m_colors[i] = new List<Color4>();
             }
 
             m_texCoords = new List<Vector3>[AiDefines.AI_MAX_NUMBER_OF_TEXTURECOORDS];
@@ -429,7 +429,7 @@ namespace Assimp
             if(channelIndex >= m_colors.Length || channelIndex < 0)
                 return false;
 
-            List<Color4D> colors = m_colors[channelIndex];
+            List<Color4> colors = m_colors[channelIndex];
 
             if(colors != null)
                 return colors.Count > 0;
@@ -572,10 +572,10 @@ namespace Assimp
 
             for(int i = 0; i < m_colors.Length; i++)
             {
-                List<Color4D> colors = m_colors[i];
+                List<Color4> colors = m_colors[i];
 
                 if(colors == null)
-                    m_colors[i] = new List<Color4D>();
+                    m_colors[i] = new List<Color4>();
                 else
                     colors.Clear();
             }
@@ -662,7 +662,7 @@ namespace Assimp
                 //Vertex Color channels
                 for(int i = 0; i < m_colors.Length; i++)
                 {
-                    List<Color4D> list = m_colors[i];
+                    List<Color4> list = m_colors[i];
 
                     if(list == null || list.Count == 0)
                     {
@@ -670,7 +670,7 @@ namespace Assimp
                     }
                     else
                     {
-                        nativeValue.Colors[i] = MemoryHelper.ToNativeArray<Color4D>(list.ToArray());
+                        nativeValue.Colors[i] = MemoryHelper.ToNativeArray<Color4>(list.ToArray());
                     }
                 }
 
@@ -747,7 +747,7 @@ namespace Assimp
                     IntPtr colorPtr = nativeValue.Colors[i];
 
                     if(colorPtr != IntPtr.Zero)
-                        m_colors[i].AddRange(MemoryHelper.FromNativeArray<Color4D>(colorPtr, vertexCount));
+                        m_colors[i].AddRange(MemoryHelper.FromNativeArray<Color4>(colorPtr, vertexCount));
                 }
 
                 //Texture coordinate channels

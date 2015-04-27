@@ -1,4 +1,6 @@
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Math.dll
+/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Math.dll.mdb
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Assimp32.dll
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Assimp64.dll
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/AssimpLicense.txt
@@ -6,5 +8,3 @@
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/AssimpNet.dll
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/obj/Debug/AssimpNet.dll
 /home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/obj/Debug/AssimpNet.dll.mdb
-/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Math.dll
-/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net45-Debug/Math.dll.mdb

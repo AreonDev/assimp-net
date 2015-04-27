@@ -610,8 +610,8 @@ namespace Assimp.Unmanaged
         /// <param name="key">Ai mat key (base) name to search for</param>
         /// <param name="texType">Texture Type semantic, always zero for non-texture properties</param>
         /// <param name="texIndex">Texture index, always zero for non-texture properties</param>
-        /// <returns>The color if it exists. If not, the default Color4D value is returned.</returns>
-        public unsafe Color4D GetMaterialColor(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
+        /// <returns>The color if it exists. If not, the default Color4 value is returned.</returns>
+        public unsafe Color4 GetMaterialColor(ref AiMaterial mat, String key, TextureType texType, uint texIndex)
         {
             LoadIfNotLoaded();
 
@@ -620,11 +620,11 @@ namespace Assimp.Unmanaged
             IntPtr ptr = IntPtr.Zero;
             try
             {
-                ptr = MemoryHelper.AllocateMemory(MemoryHelper.SizeOf<Color4D>());
+                ptr = MemoryHelper.AllocateMemory(MemoryHelper.SizeOf<Color4>());
                 ReturnCode code = func(ref mat, key, (uint) texType, texIndex, ptr);
-                Color4D color = new Color4D();
+                Color4 color = new Color4();
                 if(code == ReturnCode.Success && ptr != IntPtr.Zero)
-                    color = *((Color4D*)ptr);
+                    color = *((Color4*)ptr);
                 
                 return color;
             }
@@ -914,7 +914,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="quat">Quaternion struct to fill</param>
         /// <param name="mat">Rotation matrix</param>
-        public void CreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3x3 mat)
+        public void CreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3 mat)
         {
             LoadIfNotLoaded();
 
@@ -956,7 +956,7 @@ namespace Assimp.Unmanaged
         /// Transposes the 3x3 matrix.
         /// </summary>
         /// <param name="mat">Matrix to transpose</param>
-        public void TransposeMatrix3(ref Matrix3x3 mat)
+        public void TransposeMatrix3(ref Matrix3 mat)
         {
             LoadIfNotLoaded();
 
@@ -970,7 +970,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="vec">Vector to transform</param>
         /// <param name="mat">Rotation matrix</param>
-        public void TransformVecByMatrix3(ref Vector3 vec, ref Matrix3x3 mat)
+        public void TransformVecByMatrix3(ref Vector3 vec, ref Matrix3 mat)
         {
             LoadIfNotLoaded();
 
@@ -1012,7 +1012,7 @@ namespace Assimp.Unmanaged
         /// </summary>
         /// <param name="dst">First input matrix and is also the Matrix to receive the result</param>
         /// <param name="src">Second input matrix, to be multiplied with "dst".</param>
-        public void MultiplyMatrix3(ref Matrix3x3 dst, ref Matrix3x3 src)
+        public void MultiplyMatrix3(ref Matrix3 dst, ref Matrix3 src)
         {
             LoadIfNotLoaded();
 
@@ -1025,7 +1025,7 @@ namespace Assimp.Unmanaged
         /// Creates a 3x3 identity matrix.
         /// </summary>
         /// <param name="mat">Matrix to hold the identity</param>
-        public void IdentityMatrix3(out Matrix3x3 mat)
+        public void IdentityMatrix3(out Matrix3 mat)
         {
             LoadIfNotLoaded();
 
@@ -1391,7 +1391,7 @@ namespace Assimp.Unmanaged
         #region Math Delegates
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiCreateQuaternionFromMatrix)]
-        public delegate void aiCreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3x3 mat);
+        public delegate void aiCreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiDecomposeMatrix)]
         public delegate void aiDecomposeMatrix(ref Matrix mat, out Vector3 scaling, out Quaternion rotation, out Vector3 position);
@@ -1400,10 +1400,10 @@ namespace Assimp.Unmanaged
         public delegate void aiTransposeMatrix4(ref Matrix mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransposeMatrix3)]
-        public delegate void aiTransposeMatrix3(ref Matrix3x3 mat);
+        public delegate void aiTransposeMatrix3(ref Matrix3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransformVecByMatrix3)]
-        public delegate void aiTransformVecByMatrix3(ref Vector3 vec, ref Matrix3x3 mat);
+        public delegate void aiTransformVecByMatrix3(ref Vector3 vec, ref Matrix3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiTransformVecByMatrix4)]
         public delegate void aiTransformVecByMatrix4(ref Vector3 vec, ref Matrix mat);
@@ -1412,10 +1412,10 @@ namespace Assimp.Unmanaged
         public delegate void aiMultiplyMatrix4(ref Matrix dst, ref Matrix src);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiMultiplyMatrix3)]
-        public delegate void aiMultiplyMatrix3(ref Matrix3x3 dst, ref Matrix3x3 src);
+        public delegate void aiMultiplyMatrix3(ref Matrix3 dst, ref Matrix3 src);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiIdentityMatrix3)]
-        public delegate void aiIdentityMatrix3(out Matrix3x3 mat);
+        public delegate void aiIdentityMatrix3(out Matrix3 mat);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl), AssimpFunctionName(AssimpFunctionNames.aiIdentityMatrix4)]
         public delegate void aiIdentityMatrix4(out Matrix mat);

@@ -36,7 +36,7 @@ namespace Assimp
     {
         private String m_name;
         private List<VertexWeight> m_weights;
-        private Matrix3x3 m_offsetMatrix;
+        private Matrix3 m_offsetMatrix;
 
         /// <summary>
         /// Gets or sets the name of the bone.
@@ -89,7 +89,7 @@ namespace Assimp
         /// <summary>
         /// Gets or sets the matrix that transforms from mesh space to bone space in bind pose.
         /// </summary>
-        public Matrix3x3 OffsetMatrix
+        public Matrix3 OffsetMatrix
         {
             get
             {
@@ -107,7 +107,7 @@ namespace Assimp
         public Bone()
         {
             m_name = null;
-            m_offsetMatrix = Matrix3x3.Identity;
+            m_offsetMatrix = Matrix3.Identity;
             m_weights = new List<VertexWeight>();
         }
 
@@ -117,7 +117,7 @@ namespace Assimp
         /// <param name="name">Name of the bone</param>
         /// <param name="offsetMatrix">Bone's offset matrix</param>
         /// <param name="weights">Vertex weights</param>
-        public Bone(String name, Matrix3x3 offsetMatrix, VertexWeight[] weights)
+        public Bone(String name, Matrix3 offsetMatrix, VertexWeight[] weights)
         {
             m_name = name;
             m_offsetMatrix = offsetMatrix;

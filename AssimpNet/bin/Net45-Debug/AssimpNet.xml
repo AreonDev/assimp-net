@@ -519,7 +519,7 @@
             Constructs a new instance of the <see cref="T:Assimp.Bone" /> class.
             </summary>
         </member>
-        <member name="M:Assimp.Bone.#ctor(System.String,Assimp.Matrix3x3,Assimp.VertexWeight[])">
+        <member name="M:Assimp.Bone.#ctor(System.String,FreezingArcher.Math.Matrix3,Assimp.VertexWeight[])">
             <summary>
             Constructs a new instance of the <see cref="T:Assimp.Bone" /> class.
             </summary>
@@ -649,402 +649,6 @@
             </summary>
             <param name="nativeValue">Native value to free</param>
             <param name="freeNative">True if the unmanaged memory should be freed, false otherwise.</param>
-        </member>
-        <member name="T:Assimp.Color3D">
-            <summary>
-            Represents a RGB color.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color3D.R">
-            <summary>
-            Red component.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color3D.G">
-            <summary>
-            Green component.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color3D.B">
-            <summary>
-            Blue component.
-            </summary>
-        </member>
-        <member name="P:Assimp.Color3D.Item(System.Int32)">
-            <summary>
-            Gets or sets the component value at the specified zero-based index
-            in the order of RGBA (index 0 access R, 1 access G, etc). If
-            the index is not in range, a value of zero is returned.
-            </summary>
-            <param name="index">Zero-based index.</param>
-            <returns>The component value</returns>
-        </member>
-        <member name="M:Assimp.Color3D.#ctor(System.Single,System.Single,System.Single)">
-            <summary>
-            Constructs a Color3D.
-            </summary>
-            <param name="r">Red component</param>
-            <param name="g">Green component</param>
-            <param name="b">Blue component</param>
-        </member>
-        <member name="M:Assimp.Color3D.#ctor(System.Single)">
-            <summary>
-            Constructs a Color3D where each component is
-            set to the same value.
-            </summary>
-            <param name="value">Value to set R, G, B components</param>
-        </member>
-        <member name="M:Assimp.Color3D.IsBlack">
-            <summary>
-            Determines if the color is black, or close to being black.
-            </summary>
-            <returns>True if the color is black/nearly block, false otherwise.</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Addition(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Adds the two colors together.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Addition(Assimp.Color3D,System.Single)">
-            <summary>
-            Adds the value to each of the components of the color.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="value">Value to add to each component</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Addition(System.Single,Assimp.Color3D)">
-            <summary>
-            Adds the value to each of the components of the color.
-            </summary>
-            <param name="value">Value to add to each component</param>
-            <param name="color">Source color</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Subtraction(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Subtracts the second color from the first color.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Subtraction(Assimp.Color3D,System.Single)">
-            <summary>
-            Subtracts the value from each of the color's components.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="value">Value to subtract from each component</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Subtraction(System.Single,Assimp.Color3D)">
-            <summary>
-            Subtracts the color's components from the value, returning
-            the result as a new color. Same as <c>new Color4D(value) - color</c></summary>
-            <param name="value">Value for each component of the first color</param>
-            <param name="color">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Multiply(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Multiplies the two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Multiplied color.</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Multiply(Assimp.Color3D,System.Single)">
-            <summary>
-            Multiplies the color by a scalar value, component wise.
-            </summary>
-            <param name="value">Source color</param>
-            <param name="scale">Scalar value</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Multiply(System.Single,Assimp.Color3D)">
-            <summary>
-            Multiplies the color by a scalar value, component wise.
-            </summary>
-            <param name="scale">Scalar value</param>
-            <param name="value">Source color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Division(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Divides the first color by the second color, component wise.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Division(Assimp.Color3D,System.Single)">
-            <summary>
-            Divides the color by a divisor value.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="divisor">Divisor</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Equality(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Tets equality between two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>True if the colors are equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Color3D.op_Inequality(Assimp.Color3D,Assimp.Color3D)">
-            <summary>
-            Tets inequality between two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>True if the colors are not equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Color3D.Equals(Assimp.Color3D)">
-            <summary>
-            Tests equality between this color and another color
-            </summary>
-            <param name="other">Color to test against</param>
-            <returns>True if components are equal</returns>
-        </member>
-        <member name="M:Assimp.Color3D.Equals(System.Object)">
-            <summary>
-            Tests equality between this color and another object.
-            </summary>
-            <param name="obj">Object to test against</param>
-            <returns>True if the object is a color and the components are equal</returns>
-        </member>
-        <member name="M:Assimp.Color3D.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Assimp.Color3D.ToString">
-            <summary>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
-        </member>
-        <member name="T:Assimp.Color4D">
-            <summary>
-            Represents a Red-Green-Blue-Alpha (RGBA) color.
-            Color values range from 0 to 1.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color4D.R">
-            <summary>
-            Red component.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color4D.G">
-            <summary>
-            Green component.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color4D.B">
-            <summary>
-            Blue component.
-            </summary>
-        </member>
-        <member name="F:Assimp.Color4D.A">
-            <summary>
-            Alpha component.
-            </summary>
-        </member>
-        <member name="P:Assimp.Color4D.Item(System.Int32)">
-            <summary>
-            Gets or sets the component value at the specified zero-based index
-            in the order of RGBA (index 0 access R, 1 access G, etc). If
-            the index is not in range, a value of zero is returned.
-            </summary>
-            <param name="index">Zero-based index.</param>
-            <returns>The component value</returns>
-        </member>
-        <member name="M:Assimp.Color4D.#ctor(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Constructs a Color4D.
-            </summary>
-            <param name="r">Red component</param>
-            <param name="g">Green component</param>
-            <param name="b">Blue component</param>
-            <param name="a">Alpha component</param>
-        </member>
-        <member name="M:Assimp.Color4D.#ctor(System.Single,System.Single,System.Single)">
-            <summary>
-            Constructs a Color4D. Alpha is set to 1.0.
-            </summary>
-            <param name="r">Red component</param>
-            <param name="g">Green component</param>
-            <param name="b">Blue component</param>
-        </member>
-        <member name="M:Assimp.Color4D.#ctor(System.Single)">
-            <summary>
-            Constructs a Color4D where each component is
-            set to the same value.
-            </summary>
-            <param name="value">Value to set R, G, B, A components</param>
-        </member>
-        <member name="M:Assimp.Color4D.#ctor(Assimp.Color3D)">
-            <summary>
-            Constructs a Color4D from a Color3D. Alpha is set to 1.0.
-            </summary>
-            <param name="rgb">RGB values</param>
-        </member>
-        <member name="M:Assimp.Color4D.#ctor(Assimp.Color3D,System.Single)">
-            <summary>
-            Constructs a Color4D from a Color3D and alpha value.
-            </summary>
-            <param name="rgb">RGB values</param>
-            <param name="alpha">Alpha value</param>
-        </member>
-        <member name="M:Assimp.Color4D.IsBlack">
-            <summary>
-            Determines if the color is black, or close to being black.
-            </summary>
-            <returns>True if the color is black/nearly block, false otherwise.</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Addition(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Adds the two colors together.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Addition(Assimp.Color4D,System.Single)">
-            <summary>
-            Adds the value to each of the components of the color.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="value">Value to add to each component</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Addition(System.Single,Assimp.Color4D)">
-            <summary>
-            Adds the value to each of the components of the color.
-            </summary>
-            <param name="value">Value to add to each component</param>
-            <param name="color">Source color</param>
-            <returns>Added color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Subtraction(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Subtracts the second color from the first color.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Subtraction(Assimp.Color4D,System.Single)">
-            <summary>
-            Subtracts the value from each of the color's components.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="value">Value to subtract from each component</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Subtraction(System.Single,Assimp.Color4D)">
-            <summary>
-            Subtracts the color's components from the value, returning
-            the result as a new color. Same as <c>new Color4D(value) - color</c></summary>
-            <param name="value">Value for each component of the first color</param>
-            <param name="color">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Multiply(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Multiplies the two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Multiplied color.</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Multiply(Assimp.Color4D,System.Single)">
-            <summary>
-            Multiplies the color by a scalar value, component wise.
-            </summary>
-            <param name="value">Source color</param>
-            <param name="scale">Scalar value</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Multiply(System.Single,Assimp.Color4D)">
-            <summary>
-            Multiplies the color by a scalar value, component wise.
-            </summary>
-            <param name="scale">Scalar value</param>
-            <param name="value">Source color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Division(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Divides the first color by the second color, component wise.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Division(Assimp.Color4D,System.Single)">
-            <summary>
-            Divides the color by a divisor value.
-            </summary>
-            <param name="color">Source color</param>
-            <param name="divisor">Divisor</param>
-            <returns>Resulting color</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Equality(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Tets equality between two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>True if the colors are equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Color4D.op_Inequality(Assimp.Color4D,Assimp.Color4D)">
-            <summary>
-            Tets inequality between two colors.
-            </summary>
-            <param name="a">First color</param>
-            <param name="b">Second color</param>
-            <returns>True if the colors are not equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Color4D.Equals(Assimp.Color4D)">
-            <summary>
-            Tests equality between this color and another color
-            </summary>
-            <param name="other">Color to test against</param>
-            <returns>True if components are equal</returns>
-        </member>
-        <member name="M:Assimp.Color4D.Equals(System.Object)">
-            <summary>
-            Tests equality between this color and another object.
-            </summary>
-            <param name="obj">Object to test against</param>
-            <returns>True if the object is a color and the components are equal</returns>
-        </member>
-        <member name="M:Assimp.Color4D.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Assimp.Color4D.ToString">
-            <summary>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
         </member>
         <member name="T:Assimp.Configs.PropertyConfig">
             <summary>
@@ -4417,16 +4021,16 @@
             <param name="baseName">Base name of the property</param>
             <param name="values">Property values</param>
         </member>
-        <member name="M:Assimp.MaterialProperty.#ctor(System.String,Assimp.Color3D)">
+        <member name="M:Assimp.MaterialProperty.#ctor(System.String,FreezingArcher.Math.Color3)">
             <summary>
-            Constructs a new instance of the <see cref="T:Assimp.MaterialProperty" /> class. Creates a Color3D property.
+            Constructs a new instance of the <see cref="T:Assimp.MaterialProperty" /> class. Creates a Color3 property.
             </summary>
             <param name="baseName">Base name of the property</param>
             <param name="value">Property value</param>
         </member>
-        <member name="M:Assimp.MaterialProperty.#ctor(System.String,Assimp.Color4D)">
+        <member name="M:Assimp.MaterialProperty.#ctor(System.String,FreezingArcher.Math.Color4)">
             <summary>
-            Constructs a new instance of the <see cref="T:Assimp.MaterialProperty" /> class. Creates a Color4D property.
+            Constructs a new instance of the <see cref="T:Assimp.MaterialProperty" /> class. Creates a Color4 property.
             </summary>
             <param name="baseName">Base name of the property</param>
             <param name="value">Property value</param>
@@ -4525,28 +4129,28 @@
         </member>
         <member name="M:Assimp.MaterialProperty.GetColor3DValue">
             <summary>
-            Gets the property raw data as a Color3D.
+            Gets the property raw data as a Color3.
             </summary>
-            <returns>Color3D</returns>
+            <returns>Color3</returns>
         </member>
-        <member name="M:Assimp.MaterialProperty.SetColor3DValue(Assimp.Color3D)">
+        <member name="M:Assimp.MaterialProperty.SetColor3DValue(FreezingArcher.Math.Color3)">
             <summary>
-            Sets the property raw data as a Color3D.
+            Sets the property raw data as a Color3.
             </summary>
-            <param name="value">Color3D</param>
+            <param name="value">Color3</param>
             <returns>True if successful, false otherwise</returns>
         </member>
         <member name="M:Assimp.MaterialProperty.GetColor4DValue">
             <summary>
-            Gets the property raw data as a Color4D.
+            Gets the property raw data as a Color4.
             </summary>
-            <returns>Color4D</returns>
+            <returns>Color4</returns>
         </member>
-        <member name="M:Assimp.MaterialProperty.SetColor4DValue(Assimp.Color4D)">
+        <member name="M:Assimp.MaterialProperty.SetColor4DValue(FreezingArcher.Math.Color4)">
             <summary>
-            Sets the property raw data as a Color4D.
+            Sets the property raw data as a Color4.
             </summary>
-            <param name="value">Color4D</param>
+            <param name="value">Color4</param>
             <returns>True if successful, false otherwise</returns>
         </member>
         <member name="P:Assimp.MaterialProperty.Assimp#IMarshalable{Assimp#MaterialProperty,Assimp#Unmanaged#AiMaterialProperty}#IsNativeBlittable">
@@ -5310,12 +4914,12 @@
             <param name="b">Second texel</param>
             <returns>True if the texels are not equal, false otherwise.</returns>
         </member>
-        <member name="M:Assimp.Texel.op_Implicit(Assimp.Texel)~Assimp.Color4D">
+        <member name="M:Assimp.Texel.op_Implicit(Assimp.Texel)~FreezingArcher.Math.Color4">
             <summary>
-            Implicitly converts a texel to a Color4D.
+            Implicitly converts a texel to a Color4.
             </summary>
             <param name="texel">Texel to convert</param>
-            <returns>Converted Color4D</returns>
+            <returns>Converted Color4</returns>
         </member>
         <member name="M:Assimp.Texel.Equals(System.Object)">
             <summary>
@@ -6041,7 +5645,7 @@
             <param name="key">Ai mat key (base) name to search for</param>
             <param name="texType">Texture Type semantic, always zero for non-texture properties</param>
             <param name="texIndex">Texture index, always zero for non-texture properties</param>
-            <returns>The color if it exists. If not, the default Color4D value is returned.</returns>
+            <returns>The color if it exists. If not, the default Color4 value is returned.</returns>
         </member>
         <member name="M:Assimp.Unmanaged.AssimpLibrary.GetMaterialFloatArray(Assimp.Unmanaged.AiMaterial@,System.String,Assimp.TextureType,System.UInt32,System.UInt32)">
             <summary>
@@ -6139,7 +5743,7 @@
             <param name="scene">Pointer to the unmanaged scene data structure.</param>
             <returns>The memory information about the scene.</returns>
         </member>
-        <member name="M:Assimp.Unmanaged.AssimpLibrary.CreateQuaternionFromMatrix(FreezingArcher.Math.Quaternion@,Assimp.Matrix3x3@)">
+        <member name="M:Assimp.Unmanaged.AssimpLibrary.CreateQuaternionFromMatrix(FreezingArcher.Math.Quaternion@,FreezingArcher.Math.Matrix3@)">
             <summary>
             Creates a quaternion from the 3x3 rotation matrix.
             </summary>
@@ -6161,13 +5765,13 @@
             </summary>
             <param name="mat">Matrix to transpose</param>
         </member>
-        <member name="M:Assimp.Unmanaged.AssimpLibrary.TransposeMatrix3(Assimp.Matrix3x3@)">
+        <member name="M:Assimp.Unmanaged.AssimpLibrary.TransposeMatrix3(FreezingArcher.Math.Matrix3@)">
             <summary>
             Transposes the 3x3 matrix.
             </summary>
             <param name="mat">Matrix to transpose</param>
         </member>
-        <member name="M:Assimp.Unmanaged.AssimpLibrary.TransformVecByMatrix3(FreezingArcher.Math.Vector3@,Assimp.Matrix3x3@)">
+        <member name="M:Assimp.Unmanaged.AssimpLibrary.TransformVecByMatrix3(FreezingArcher.Math.Vector3@,FreezingArcher.Math.Matrix3@)">
             <summary>
             Transforms the vector by the 3x3 rotation matrix.
             </summary>
@@ -6188,14 +5792,14 @@
             <param name="dst">First input matrix and is also the Matrix to receive the result</param>
             <param name="src">Second input matrix, to be multiplied with "dst".</param>
         </member>
-        <member name="M:Assimp.Unmanaged.AssimpLibrary.MultiplyMatrix3(Assimp.Matrix3x3@,Assimp.Matrix3x3@)">
+        <member name="M:Assimp.Unmanaged.AssimpLibrary.MultiplyMatrix3(FreezingArcher.Math.Matrix3@,FreezingArcher.Math.Matrix3@)">
             <summary>
             Multiplies two 3x3 matrices. The destination matrix receives the result.
             </summary>
             <param name="dst">First input matrix and is also the Matrix to receive the result</param>
             <param name="src">Second input matrix, to be multiplied with "dst".</param>
         </member>
-        <member name="M:Assimp.Unmanaged.AssimpLibrary.IdentityMatrix3(Assimp.Matrix3x3@)">
+        <member name="M:Assimp.Unmanaged.AssimpLibrary.IdentityMatrix3(FreezingArcher.Math.Matrix3@)">
             <summary>
             Creates a 3x3 identity matrix.
             </summary>
@@ -6647,248 +6251,6 @@
             </summary>
             <param name="msg">Message</param>
             <param name="userData">Userdata</param>
-        </member>
-        <member name="T:Assimp.Matrix3x3">
-            <summary>
-            Represents a 3x3 matrix. Assimp docs say their matrices are always row-major,
-            and it looks like they're only describing the memory layout. Matrices are treated
-            as column vectors however (X base in the first column, Y base the second, and Z base the third)
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.A1">
-            <summary>
-            Value at row 1, column 1 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.A2">
-            <summary>
-            Value at row 1, column 2 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.A3">
-            <summary>
-            Value at row 1, column 3 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.B1">
-            <summary>
-            Value at row 2, column 1 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.B2">
-            <summary>
-            Value at row 2, column 2 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.B3">
-            <summary>
-            Value at row 2, column 3 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.C1">
-            <summary>
-            Value at row 3, column 1 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.C2">
-            <summary>
-            Value at row 3, column 2 of the matrix
-            </summary>
-        </member>
-        <member name="F:Assimp.Matrix3x3.C3">
-            <summary>
-            Value at row 3, column 3 of the matrix
-            </summary>
-        </member>
-        <member name="P:Assimp.Matrix3x3.Identity">
-            <summary>
-            Gets the identity matrix.
-            </summary>
-        </member>
-        <member name="P:Assimp.Matrix3x3.IsIdentity">
-            <summary>
-            Gets if this matrix is an identity matrix.
-            </summary>
-        </member>
-        <member name="P:Assimp.Matrix3x3.Item(System.Int32,System.Int32)">
-            <summary>
-            Gets or sets the value at the specific one-based row, column
-            index. E.g. i = 1, j = 2 gets the value in row 1, column 2 (MA2). Indices
-            out of range return a value of zero.
-            </summary>
-            <param name="i">One-based Row index</param>
-            <param name="j">One-based Column index</param>
-            <returns>Matrix value</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.#ctor(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Constructs a new Matrix3x3.
-            </summary>
-            <param name="a1">Element at row 1, column 1</param>
-            <param name="a2">Element at row 1, column 2</param>
-            <param name="a3">Element at row 1, column 3</param>
-            <param name="b1">Element at row 2, column 1</param>
-            <param name="b2">Element at row 2, column 2</param>
-            <param name="b3">Element at row 2, column 3</param>
-            <param name="c1">Element at row 3, column 1</param>
-            <param name="c2">Element at row 3, column 2</param>
-            <param name="c3">Element at row 3, column 3</param>
-        </member>
-        <member name="M:Assimp.Matrix3x3.#ctor(FreezingArcher.Math.Matrix)">
-            <summary>
-            Constructs a new Matrix3x3.
-            </summary>
-            <param name="rotMatrix">A 4x4 matrix to construct from, only taking the rotation/scaling part.</param>
-        </member>
-        <member name="M:Assimp.Matrix3x3.#ctor(Assimp.Matrix3x3)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Assimp.Matrix3x3" /> struct.
-            </summary>
-            <param name="copy">Source matrix</param>
-        </member>
-        <member name="M:Assimp.Matrix3x3.Transpose">
-            <summary>
-            Transposes this matrix (rows become columns, vice versa).
-            </summary>
-        </member>
-        <member name="M:Assimp.Matrix3x3.Inverse">
-            <summary>
-            Inverts the matrix. If the matrix is *not* invertible all elements are set to <see cref="F:System.Single.NaN" />.
-            </summary>
-        </member>
-        <member name="M:Assimp.Matrix3x3.Determinant">
-            <summary>
-            Compute the determinant of this matrix.
-            </summary>
-            <returns>The determinant</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromEulerAnglesXYZ(System.Single,System.Single,System.Single)">
-            <summary>
-            Creates a rotation matrix from a set of euler angles.
-            </summary>
-            <param name="x">Rotation angle about the x-axis, in radians.</param>
-            <param name="y">Rotation angle about the y-axis, in radians.</param>
-            <param name="z">Rotation angle about the z-axis, in radians.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromEulerAnglesXYZ(FreezingArcher.Math.Vector3)">
-            <summary>
-            Creates a rotation matrix from a set of euler angles.
-            </summary>
-            <param name="angles">Vector containing the rotation angles about the x, y, z axes, in radians.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromRotationX(System.Single)">
-            <summary>
-            Creates a rotation matrix for a rotation about the x-axis.
-            </summary>
-            <param name="radians">Rotation angle in radians.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromRotationY(System.Single)">
-            <summary>
-            Creates a rotation matrix for a rotation about the y-axis.
-            </summary>
-            <param name="radians">Rotation angle in radians.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromRotationZ(System.Single)">
-            <summary>
-            Creates a rotation matrix for a rotation about the z-axis.
-            </summary>
-            <param name="radians">Rotation angle in radians.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromAngleAxis(System.Single,FreezingArcher.Math.Vector3)">
-            <summary>
-            Creates a rotation matrix for a rotation about an arbitrary axis.
-            </summary>
-            <param name="radians">Rotation angle, in radians</param>
-            <param name="axis">Rotation axis, which should be a normalized vector.</param>
-            <returns>The rotation matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromScaling(FreezingArcher.Math.Vector3)">
-            <summary>
-            Creates a scaling matrix.
-            </summary>
-            <param name="scaling">Scaling vector</param>
-            <returns>The scaling vector</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.FromToMatrix(FreezingArcher.Math.Vector3,FreezingArcher.Math.Vector3)">
-            <summary>
-            Creates a rotation matrix that rotates a vector called "from" into another
-            vector called "to". Based on an algorithm by Tomas Moller and John Hudges:
-            <para>
-            "Efficiently Building a Matrix to Rotate One Vector to Another"
-            Journal of Graphics Tools, 4(4):1-4, 1999
-            </para></summary>
-            <param name="from">Starting vector</param>
-            <param name="to">Ending vector</param>
-            <returns>Rotation matrix to rotate from the start to end.</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.op_Equality(Assimp.Matrix3x3,Assimp.Matrix3x3)">
-            <summary>
-            Tests equality between two matrices.
-            </summary>
-            <param name="a">First matrix</param>
-            <param name="b">Second matrix</param>
-            <returns>True if the matrices are equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.op_Inequality(Assimp.Matrix3x3,Assimp.Matrix3x3)">
-            <summary>
-            Tests inequality between two matrices.
-            </summary>
-            <param name="a">First matrix</param>
-            <param name="b">Second matrix</param>
-            <returns>True if the matrices are not equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.op_Multiply(Assimp.Matrix3x3,Assimp.Matrix3x3)">
-            <summary>
-            Performs matrix multiplication.Multiplication order is B x A. That way, SRT concatenations
-            are left to right.
-            </summary>
-            <param name="a">First matrix</param>
-            <param name="b">Second matrix</param>
-            <returns>Multiplied matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.op_Implicit(FreezingArcher.Math.Matrix)~Assimp.Matrix3x3">
-            <summary>
-            Implicit conversion from a 4x4 matrix to a 3x3 matrix.
-            </summary>
-            <param name="mat">4x4 matrix</param>
-            <returns>3x3 matrix</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.Equals(Assimp.Matrix3x3)">
-            <summary>
-            Tests equality between this matrix and another.
-            </summary>
-            <param name="other">Other matrix to test</param>
-            <returns>True if the matrices are equal, false otherwise</returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.Equals(System.Object)">
-            <summary>
-            Determines whether the specified <see cref="T:System.Object" /> is equal to this instance.
-            </summary>
-            <param name="obj">The <see cref="T:System.Object" /> to compare with this instance.</param>
-            <returns>
-                <c>true</c> if the specified <see cref="T:System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-            </returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-            </returns>
-        </member>
-        <member name="M:Assimp.Matrix3x3.ToString">
-            <summary>
-            Returns a <see cref="T:System.String" /> that represents this instance.
-            </summary>
-            <returns>
-            A <see cref="T:System.String" /> that represents this instance.
-            </returns>
         </member>
         <member name="T:Assimp.FreeNativeDelegate">
             <summary>

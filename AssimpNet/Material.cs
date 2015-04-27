@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using Assimp.Unmanaged;
+using FreezingArcher.Math;
 
 namespace Assimp
 {
@@ -444,7 +445,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color diffuse. Default value is white.
         /// </summary>
-        public Color4D ColorDiffuse
+        public Color4 ColorDiffuse
         {
             get
             {
@@ -452,7 +453,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(1.0f, 1.0f, 1.0f, 1.0f);
+                return new Color4(1.0f, 1.0f, 1.0f, 1.0f);
             }
             set
             {
@@ -482,7 +483,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color ambient. Default value is (.2f, .2f, .2f, 1.0f).
         /// </summary>
-        public Color4D ColorAmbient
+        public Color4 ColorAmbient
         {
             get
             {
@@ -490,7 +491,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(.2f, .2f, .2f, 1.0f);
+                return new Color4(.2f, .2f, .2f, 1.0f);
             }
             set
             {
@@ -520,7 +521,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color specular. Default value is black.
         /// </summary>
-        public Color4D ColorSpecular
+        public Color4 ColorSpecular
         {
             get
             {
@@ -528,7 +529,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(0, 0, 0, 1.0f);
+                return new Color4(0, 0, 0, 1.0f);
             }
             set
             {
@@ -558,7 +559,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color emissive. Default value is black.
         /// </summary>
-        public Color4D ColorEmissive
+        public Color4 ColorEmissive
         {
             get
             {
@@ -566,7 +567,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(0, 0, 0, 1.0f);
+                return new Color4(0, 0, 0, 1.0f);
             }
             set
             {
@@ -596,7 +597,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color transparent. Default value is black.
         /// </summary>
-        public Color4D ColorTransparent
+        public Color4 ColorTransparent
         {
             get
             {
@@ -604,7 +605,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(0, 0, 0, 1.0f);
+                return new Color4(0, 0, 0, 1.0f);
             }
             set
             {
@@ -634,7 +635,7 @@ namespace Assimp
         /// <summary>
         /// Gets the color reflective. Default value is black.
         /// </summary>
-        public Color4D ColorReflective
+        public Color4 ColorReflective
         {
             get
             {
@@ -642,7 +643,7 @@ namespace Assimp
                 if(prop != null)
                     return prop.GetColor4DValue();
 
-                return new Color4D(0, 0, 0, 1.0f);
+                return new Color4(0, 0, 0, 1.0f);
             }
             set
             {

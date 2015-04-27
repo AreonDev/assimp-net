@@ -400,7 +400,7 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Matrix that transforms the vertex from mesh to bone space in bind pose
         /// </summary>
-        public Matrix3x3 OffsetMatrix;
+        public Matrix3 OffsetMatrix;
     }
 
     /// <summary>
@@ -636,17 +636,17 @@ namespace Assimp.Unmanaged
         /// <summary>
         /// Diffuse color.
         /// </summary>
-        public Color3D ColorDiffuse;
+        public Color3 ColorDiffuse;
 
         /// <summary>
         /// Specular color.
         /// </summary>
-        public Color3D ColorSpecular;
+        public Color3 ColorSpecular;
 
         /// <summary>
         /// Ambient color.
         /// </summary>
-        public Color3D ColorAmbient;
+        public Color3 ColorAmbient;
 
         /// <summary>
         /// Spot light inner angle.
