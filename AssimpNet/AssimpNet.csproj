@@ -108,20 +108,24 @@
     <Compile Include="VertexWeight.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\libs\Assimp\Assimp32.dll">
-      <Link>Assimp32.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\libs\Assimp\Assimp64.dll">
-      <Link>Assimp64.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="AssimpLicense.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="AssimpKey.snk" />
+    <None Include="lib64\Assimp64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="lib64\Assimp64.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="lib32\Assimp32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib32\Assimp32.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -137,5 +141,9 @@
       <Project>{6EA025BA-DB6F-40AA-B970-069A104D2659}</Project>
       <Name>Math</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib64\" />
+    <Folder Include="lib32\" />
   </ItemGroup>
 </Project>
