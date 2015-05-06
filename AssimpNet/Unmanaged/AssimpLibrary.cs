@@ -1469,11 +1469,11 @@ namespace Assimp.Unmanaged
     /// </summary>
     internal static class AssimpDefaultLibraryPath
     {
-        public const String DefaultWindows32BitPath = "Assimp32.dll";
-        public const String DefaultWindows64BitPath = "Assimp64.dll";
+        public const String DefaultWindows32BitPath = "lib32/Assimp32.dll";
+        public const String DefaultWindows64BitPath = "lib64/Assimp64.dll";
 
-        public const String DefaultLinux32BitPath = "Assimp32.so";
-        public const String DefaultLinux64BitPath = "Assimp64.so";
+        public const String DefaultLinux32BitPath = "lib32/Assimp32.so";
+        public const String DefaultLinux64BitPath = "lib64/Assimp64.so";
 
         public static AssimpLibraryImplementation CreateRuntimeImplementation()
         {
