@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (c) 2012-2014 AssimpNet - Nicholas Woodfield
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -191,11 +191,12 @@ namespace Assimp
                 Managed managedValue = Activator.CreateInstance<Managed>();
 
                 //Marshal structure from the currentPointer position
-                Native nativeValue = new Native();
+                Native nativeValue;
 
                 if(managedValue.IsNativeBlittable)
                 {
-                    Marshal.PtrToStructure(currPos, nativeValue);
+
+                    nativeValue = Marshal.PtrToStructure<Native>(currPos);
                 }
                 else
                 {
@@ -354,11 +355,11 @@ namespace Assimp
             Managed managedValue = Activator.CreateInstance<Managed>();
 
             //Marshal pointer to structure
-            Native nativeValue = new Native();
+            Native nativeValue;
 
             if(managedValue.IsNativeBlittable)
             {
-                Marshal.PtrToStructure(ptr, nativeValue);
+                nativeValue = Marshal.PtrToStructure<Native> (ptr);
             }
             else
             {
