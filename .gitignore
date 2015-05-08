@@ -1,9 +1,41 @@
-[Bb]in
-[Oo]bj
-[Dd]ebug
-[Rr]elease
-AssimpNet/[Bb]in
-AssimpNet/[Oo]bj
-AssimpNet/[Oo]bj/[Dd]ebug
-AssimpNet/[Oo]bj/[Rr]elease
+#Beispiel:
+#Windows Thumbnails ignorieren
+Thumbs.db
 
+#Visual Studio Dateien ignorieren
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.mdb
+*.vshost*
+*.ilk
+*.log
+*.userprefs
+[Bb]in
+[Bb]uild
+[Dd]ebug*/
+*.lib
+*.sbr
+*~
+obj/
+[Rr]elease*/
+_ReSharper*/
+#ignore thumbnails created by windows
+#Ignore files build by Visual Studio
+[Tt]est[Rr]esult*
+
+*.userprefs
+[bB]inaries
+=======
+#[bB]inaries
