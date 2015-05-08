@@ -1,2 +1,0 @@
-/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net20-Debug/Math.dll
-/home/martin/Dokumente/Entwicklung/FreezingArcher/FreezingArcher/assimp/AssimpNet/bin/Net20-Debug/Math.dll.mdb
