@@ -25,6 +25,9 @@ Thumbs.db
 [Bb]in
 [Bb]uild
 [Dd]ebug*/
+*/[Bb]in
+*/[Bb]uild
+*/[Dd]ebug*/
 *.lib
 *.sbr
 *~
@@ -37,5 +40,6 @@ _ReSharper*/
 
 *.userprefs
 [bB]inaries
+*/[bB]inaries
 =======
 #[bB]inaries
