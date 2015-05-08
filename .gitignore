@@ -3,6 +3,9 @@
 Thumbs.db
 
 #Visual Studio Dateien ignorieren
+*.dll
+*.mdb
+*.pdb
 *.exe
 *.pdb
 *.user
@@ -25,9 +28,6 @@ Thumbs.db
 [Bb]in
 [Bb]uild
 [Dd]ebug*/
-*/[Bb]in
-*/[Bb]uild
-*/[Dd]ebug*/
 *.lib
 *.sbr
 *~
@@ -40,6 +40,5 @@ _ReSharper*/
 
 *.userprefs
 [bB]inaries
-*/[bB]inaries
 =======
 #[bB]inaries
