@@ -19,23 +19,35 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Build\Release\lib</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\AssimpNet.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="bash -c &quot;mkdir -p ${TargetDir}/../lib32 ${TargetDir}/../lib64 &amp;&amp; mv ${TargetDir}/lib32/* ${TargetDir}/../lib32 &amp;&amp; mv ${TargetDir}/lib64/* ${TargetDir}/../lib64 &amp;&amp; rm -r ${TargetDir}/lib32 ${TargetDir}/lib64&quot;" workingdir="" />
+        <Command type="Clean" command="bash -c &quot;rm -f Assimp*&quot;" workingdir="bash -c &quot;rm -f ${TargetDir}/Assimp*&quot;" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\Build\Debug\lib</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\AssimpNet.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="bash -c &quot;mkdir -p ${TargetDir}/../lib32 ${TargetDir}/../lib64 &amp;&amp; mv ${TargetDir}/lib32/* ${TargetDir}/../lib32 &amp;&amp; mv ${TargetDir}/lib64/* ${TargetDir}/../lib64 &amp;&amp; rm -r ${TargetDir}/lib32 ${TargetDir}/lib64&quot;" workingdir="" />
+        <Command type="Clean" command="bash -c &quot;rm -f ${TargetDir}/Assimp*&quot;" workingdir="" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWindows|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
